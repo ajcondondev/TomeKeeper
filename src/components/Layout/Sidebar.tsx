@@ -9,7 +9,8 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <aside className="w-56 shrink-0 border-r border-gray-200 bg-white">
+    // Hidden on mobile — navigation handled by Navbar tabs on small screens
+    <aside className="hidden w-56 shrink-0 border-r border-gray-200 bg-white md:block">
       <nav className="flex flex-col gap-1 p-4">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
