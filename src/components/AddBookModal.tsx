@@ -31,6 +31,8 @@ export function AddBookModal() {
   const [form, setForm] = useState<FormState>(EMPTY)
   const [fieldErrors, setFieldErrors] = useState<Partial<FormState>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isFetchingCover, setIsFetchingCover] = useState(false)
+  const [coverFetchError, setCoverFetchError] = useState<string | null>(null)
   const titleRef = useRef<HTMLInputElement>(null)
 
   const handleClose = useCallback(() => {
@@ -38,6 +40,7 @@ export function AddBookModal() {
     closeModal()
     setForm(EMPTY)
     setFieldErrors({})
+    setCoverFetchError(null)
   }, [closeModal, isSubmitting])
 
   // Scroll lock + focus first field on open
@@ -68,6 +71,9 @@ export function AddBookModal() {
     if (fieldErrors[field]) {
       setFieldErrors((prev) => ({ ...prev, [field]: '' }))
     }
+    if (field === 'coverUrl' && coverFetchError) {
+      setCoverFetchError(null)
+    }
   }
 
   function validate(): boolean {
@@ -76,6 +82,29 @@ export function AddBookModal() {
     if (!form.author.trim()) next.author = 'Author is required'
     setFieldErrors(next)
     return Object.keys(next).length === 0
+  }
+
+  async function fetchCover() {
+    setCoverFetchError(null)
+    setIsFetchingCover(true)
+    try {
+      const title = encodeURIComponent(form.title.trim())
+      const author = form.author.trim() ? `&author=${encodeURIComponent(form.author.trim())}` : ''
+      const url = `https://openlibrary.org/search.json?title=${title}${author}&limit=1`
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Request failed')
+      const data = (await response.json()) as { docs: Array<{ cover_i?: number }> }
+      const coverId = data.docs[0]?.cover_i
+      if (coverId === undefined) {
+        setCoverFetchError('No cover found for this title.')
+        return
+      }
+      updateField('coverUrl', `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`)
+    } catch {
+      setCoverFetchError('Could not reach Open Library. Check your connection.')
+    } finally {
+      setIsFetchingCover(false)
+    }
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -203,41 +232,55 @@ export function AddBookModal() {
               />
             </div>
 
-            {/* Pages + Cover URL */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label
-                  htmlFor="book-pages"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Pages
-                </label>
-                <input
-                  id="book-pages"
-                  type="number"
-                  min="1"
-                  value={form.pageCount}
-                  onChange={(e) => updateField('pageCount', e.target.value)}
-                  className={inputClass('pageCount')}
-                  placeholder="e.g. 412"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="book-cover"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Cover URL
-                </label>
+            {/* Pages */}
+            <div>
+              <label
+                htmlFor="book-pages"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Pages
+              </label>
+              <input
+                id="book-pages"
+                type="number"
+                min="1"
+                value={form.pageCount}
+                onChange={(e) => updateField('pageCount', e.target.value)}
+                className={inputClass('pageCount')}
+                placeholder="e.g. 412"
+              />
+            </div>
+
+            {/* Cover URL */}
+            <div>
+              <label
+                htmlFor="book-cover"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Cover URL
+              </label>
+              <div className="flex items-center gap-2">
                 <input
                   id="book-cover"
                   type="url"
                   value={form.coverUrl}
                   onChange={(e) => updateField('coverUrl', e.target.value)}
-                  className={inputClass('coverUrl')}
+                  className={`${inputClass('coverUrl')} flex-1`}
                   placeholder="https://..."
                 />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={!form.title.trim() || isFetchingCover || isSubmitting}
+                  onClick={fetchCover}
+                >
+                  {isFetchingCover ? 'Finding...' : 'Find Cover'}
+                </Button>
               </div>
+              {coverFetchError && (
+                <p className="mt-1 text-xs text-red-500">{coverFetchError}</p>
+              )}
             </div>
           </div>
 
