@@ -32,7 +32,7 @@ export function ReadingListPage() {
       {/* Page header */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Reading List</h2>
-        {status === 'success' && (
+        {readingListBooks.length > 0 && (
           <p className="mt-0.5 text-sm text-gray-500">
             {readingListBooks.length}{' '}
             {readingListBooks.length === 1 ? 'book' : 'books'}

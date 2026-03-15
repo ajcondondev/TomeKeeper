@@ -6,6 +6,7 @@ A personal book tracking web app. Add books to your library, mark them as read, 
 
 ## Features
 
+- Email/password accounts — each user has their own private library
 - View your book library in a responsive grid
 - Add books with title, author, genre, page count, and cover image
 - Auto-fetch cover art from Open Library
@@ -53,7 +54,11 @@ npm run server:dev
 npm run dev
 ```
 
-The backend creates `data/tomekeeper.db` (SQLite) automatically on first run.
+The backend creates `data/tomekeeper.db` (SQLite) automatically on first run and runs all migrations.
+
+**First time setup:** Open the app and click "Create one" on the login page to register an account. Each account has its own private book library.
+
+> **Upgrading from a pre-auth version?** The database schema changed to add user accounts. Delete `data/tomekeeper.db` before starting the server so it can be recreated with the new schema.
 
 ---
 

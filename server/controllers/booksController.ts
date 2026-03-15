@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { db } from '../db/client.js'
 import { books } from '../db/schema.js'
 import { AppError } from '../middleware/errorHandler.js'
@@ -10,8 +10,8 @@ function ok<T>(res: Response, data: T, message: string, status = 200): void {
   res.status(status).json({ success: true, message, data })
 }
 
-export async function getBooks(_req: Request, res: Response): Promise<void> {
-  const rows = db.select().from(books).all()
+export async function getBooks(req: Request, res: Response): Promise<void> {
+  const rows = db.select().from(books).where(eq(books.userId, req.user!.id)).all()
   ok(res, rows, 'Books retrieved')
 }
 
@@ -20,7 +20,11 @@ export async function getBook(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const row = db.select().from(books).where(eq(books.id, req.params.id)).get()
+  const row = db
+    .select()
+    .from(books)
+    .where(and(eq(books.id, req.params.id), eq(books.userId, req.user!.id)))
+    .get()
   if (!row) return next(new AppError(404, `Book not found: ${req.params.id}`))
   ok(res, row, 'Book retrieved')
 }
@@ -45,6 +49,7 @@ export async function createBook(
 
   const newBook = {
     id: crypto.randomUUID(),
+    userId: req.user!.id,
     title: (title as string).trim(),
     author: (author as string).trim(),
     coverUrl: typeof coverUrl === 'string' && coverUrl.trim() ? coverUrl.trim() : null,
@@ -65,7 +70,11 @@ export async function updateBook(
   next: NextFunction,
 ): Promise<void> {
   const { id } = req.params
-  const existing = db.select().from(books).where(eq(books.id, id)).get()
+  const existing = db
+    .select()
+    .from(books)
+    .where(and(eq(books.id, id), eq(books.userId, req.user!.id)))
+    .get()
   if (!existing) return next(new AppError(404, `Book not found: ${id}`))
 
   const { title, author, coverUrl, genre, pageCount, status, finishedAt } =
@@ -88,7 +97,7 @@ export async function updateBook(
     return next(new AppError(400, 'No valid fields provided for update'))
   }
 
-  db.update(books).set(updates).where(eq(books.id, id)).run()
+  db.update(books).set(updates).where(and(eq(books.id, id), eq(books.userId, req.user!.id))).run()
   const updated = db.select().from(books).where(eq(books.id, id)).get()
   ok(res, updated, 'Book updated')
 }
@@ -99,7 +108,11 @@ export async function deleteBook(
   next: NextFunction,
 ): Promise<void> {
   const { id } = req.params
-  const existing = db.select().from(books).where(eq(books.id, id)).get()
+  const existing = db
+    .select()
+    .from(books)
+    .where(and(eq(books.id, id), eq(books.userId, req.user!.id)))
+    .get()
   if (!existing) return next(new AppError(404, `Book not found: ${id}`))
 
   db.delete(books).where(eq(books.id, id)).run()

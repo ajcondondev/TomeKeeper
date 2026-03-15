@@ -6,7 +6,7 @@ import type { ApiResponse } from '@/types/api.types'
 import { API_BASE_URL } from '@/config/env'
 
 function makeClient(): AxiosInstance {
-  const client = axios.create({ baseURL: `${API_BASE_URL}/api` })
+  const client = axios.create({ baseURL: `${API_BASE_URL}/api`, withCredentials: true })
 
   client.interceptors.response.use(
     (response) => response,

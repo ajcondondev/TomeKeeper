@@ -34,7 +34,7 @@ export function LibraryPage() {
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900">My Library</h2>
-          {status === 'success' && (
+          {books.length > 0 && (
             <p className="mt-0.5 text-sm text-gray-500">
               {books.length} {books.length === 1 ? 'book' : 'books'}
             </p>

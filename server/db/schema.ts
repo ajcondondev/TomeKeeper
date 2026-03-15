@@ -1,7 +1,18 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt: text('created_at').notNull(),
+})
+
+export type UserRow = typeof users.$inferSelect
+export type NewUserRow = typeof users.$inferInsert
+
 export const books = sqliteTable('books', {
   id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
   title: text('title').notNull(),
   author: text('author').notNull(),
   coverUrl: text('cover_url'),

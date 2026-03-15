@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BookMarked, Library } from 'lucide-react'
+import { BookMarked, Library, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/authStore'
 
 const navItems = [
   { to: '/library', label: 'My Library', icon: Library },
@@ -8,10 +10,20 @@ const navItems = [
 ]
 
 export function Sidebar() {
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    await logout()
+    // No navigate() here — ProtectedRoute redirects to /login when user becomes null
+  }
+
   return (
     // Hidden on mobile — navigation handled by Navbar tabs on small screens
-    <aside className="hidden w-56 shrink-0 border-r border-gray-200 bg-white md:block">
-      <nav className="flex flex-col gap-1 p-4">
+    <aside className="hidden w-56 shrink-0 flex-col border-r border-gray-200 bg-white md:flex">
+      <nav className="flex flex-1 flex-col gap-1 p-4">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
@@ -30,6 +42,22 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {user && (
+        <div className="border-t border-gray-100 p-4">
+          <p className="mb-2 truncate text-xs text-gray-400" title={user.email}>
+            {user.email}
+          </p>
+          <button
+            onClick={() => { void handleLogout() }}
+            disabled={isLoggingOut}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <LogOut className="h-4 w-4" />
+            {isLoggingOut ? 'Signing out…' : 'Sign out'}
+          </button>
+        </div>
+      )}
     </aside>
   )
 }
