@@ -27,3 +27,16 @@ export const books = sqliteTable('books', {
 
 export type BookRow = typeof books.$inferSelect
 export type NewBookRow = typeof books.$inferInsert
+
+export const reviews = sqliteTable('reviews', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  bookId: text('book_id').notNull().references(() => books.id),
+  title: text('title').notNull(),
+  review: text('review').notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+})
+
+export type ReviewRow = typeof reviews.$inferSelect
+export type NewReviewRow = typeof reviews.$inferInsert
