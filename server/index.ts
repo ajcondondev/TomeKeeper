@@ -3,6 +3,7 @@ import cors from 'cors'
 import session from 'express-session'
 import { booksRouter } from './routes/books.js'
 import { authRouter } from './routes/auth.js'
+import { reviewsRouter } from './routes/reviews.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { runMigrations } from './db/client.js'
 
@@ -30,6 +31,7 @@ app.use(session({
 
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
+app.use('/api/reviews', reviewsRouter)
 
 app.use(errorHandler)
 
