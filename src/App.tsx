@@ -4,6 +4,7 @@ import { AppShell } from '@/components/Layout/AppShell'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { LibraryPage } from '@/pages/LibraryPage'
 import { ReadingListPage } from '@/pages/ReadingListPage'
+import { ReviewsPage } from '@/pages/ReviewsPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -35,6 +36,7 @@ export default function App() {
           <Route index element={<Navigate to="/library" replace />} />
           <Route path="library" element={<LibraryPage />} />
           <Route path="reading-list" element={<ReadingListPage />} />
+          <Route path="reviews" element={<ReviewsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

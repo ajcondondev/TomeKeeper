@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BookMarked, Library, LogOut } from 'lucide-react'
+import { BookMarked, Library, LogOut, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
 
 const navItems = [
   { to: '/library', label: 'My Library', icon: Library },
   { to: '/reading-list', label: 'Reading List', icon: BookMarked },
+  { to: '/reviews', label: 'My Reviews', icon: Star },
 ]
 
 export function Sidebar() {
