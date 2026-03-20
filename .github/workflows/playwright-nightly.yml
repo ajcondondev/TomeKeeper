@@ -1,0 +1,65 @@
+name: Playwright Nightly Regression
+
+on:
+  schedule:
+    # 2:00 AM UTC every night
+    - cron: '0 2 * * *'
+  # Allow manual runs from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  regression:
+    name: Full Regression (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      # Run all browsers even if one fails — we want the full picture.
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      # Also install Chromium if running firefox/webkit — the setup project
+      # (auth.setup.ts) runs in the default browser (Chromium).
+      - name: Install Chromium for auth setup (if not already installed)
+        if: matrix.browser != 'chromium'
+        run: npx playwright install --with-deps chromium
+
+      - name: Create e2e environment file
+        run: cp e2e/.env.example e2e/.env
+
+      - name: Run full regression suite
+        run: npx playwright test --project=${{ matrix.browser }}
+        working-directory: e2e
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-nightly-${{ matrix.browser }}-${{ github.run_id }}
+          path: e2e/playwright-report/
+          retention-days: 30
+
+      - name: Upload traces and screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-test-results-nightly-${{ matrix.browser }}-${{ github.run_id }}
+          path: e2e/test-results/
+          retention-days: 30
