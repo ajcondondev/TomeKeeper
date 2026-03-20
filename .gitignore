@@ -61,3 +61,9 @@ playwright-profile/
 data/*.db
 data/*.db-shm
 data/*.db-wal
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
