@@ -59,6 +59,7 @@ export default defineConfig({
     // ------------------------------------------------------------------
     {
       name: 'setup',
+      testDir: './',
       testMatch: /auth\.setup\.ts/,
       use: { baseURL },
     },

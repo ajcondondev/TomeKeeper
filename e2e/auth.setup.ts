@@ -1,5 +1,8 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { test as setup } from '@playwright/test';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Auth setup — runs once before the browser test projects.
@@ -27,8 +30,9 @@ setup('authenticate', async ({ page }) => {
 
   // Log in through the browser to capture the express-session cookie.
   await page.goto('/login');
+  await page.waitForLoadState('networkidle');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByRole('textbox', { name: 'Password' }).fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('**/library');
 
