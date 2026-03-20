@@ -41,6 +41,13 @@ yarn-error.log*
 .cache/
 *.tmp
 
+# Claude / AI config (local only)
+CLAUDE.md
+*.claude.md
+.claude/
+.clauderc
+docs/
+
 # SQLite database
 data/*.db
 data/*.db-shm
