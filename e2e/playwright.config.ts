@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
+// ESM-compatible __dirname (root package.json has "type": "module")
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load e2e-specific env vars from e2e/.env (falls back to process.env)
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -125,7 +129,7 @@ export default defineConfig({
     {
       // Express API
       command: 'npm run server:dev --prefix ..',
-      url: process.env.API_URL ?? 'http://localhost:3001',
+      url: `${process.env.API_URL ?? 'http://localhost:3001'}/health`,
       reuseExistingServer: true,
       stdout: 'pipe',
       stderr: 'pipe',

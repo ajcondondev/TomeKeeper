@@ -29,6 +29,8 @@ app.use(session({
   },
 }))
 
+app.get('/health', (_req, res) => res.json({ status: 'ok' }))
+
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/reviews', reviewsRouter)
