@@ -44,8 +44,9 @@ export class BookCardComponent extends BaseComponent {
     super(page, root);
     this.titleHeading = this.root.getByRole('heading', { level: 3 });
     this.authorText = this.root.getByRole('paragraph').first();
-    // Status badge is a <span> (Badge component) with status text
-    this.statusBadge = this.root.locator('span').filter({
+    // Status badge is a <span> styled as a rounded pill. The button spans inside
+    // the card also match the text, so narrow by the badge's rounded-full class.
+    this.statusBadge = this.root.locator('span.rounded-full').filter({
       hasText: /^(Unread|Read|Want to Read)$/,
     });
     this.readToggleButton = this.root.getByRole('button', { name: /^(Read|Unread)$/ });
