@@ -29,7 +29,7 @@ export interface ReviewData {
 export class TestDataFactory {
   /** Unique email address safe for test use. */
   static email(prefix = 'test'): string {
-    return `${prefix}+${faker.string.alphanumeric(8)}@tomekeeper.dev`;
+    return `${prefix}+${faker.string.alphanumeric({ length: 8, casing: 'lower' })}@tomekeeper.dev`;
   }
 
   static password(): string {
