@@ -41,12 +41,21 @@ yarn-error.log*
 .cache/
 *.tmp
 
-# Claude / AI config (local only)
+# Claude / AI config and local docs (local only)
 CLAUDE.md
+TESTING_STANDARDS.md
+CLAUDE_CODE_PLAYBOOK.md
+SETUP_GUIDE.md
 *.claude.md
 .claude/
 .clauderc
 docs/
+playwright-qa-guide.docx
+instructionsreadme.txt
+
+# Playwright auth state and profiles
+playwright/.auth/
+playwright-profile/
 
 # SQLite database
 data/*.db
