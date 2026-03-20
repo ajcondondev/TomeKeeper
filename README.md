@@ -13,6 +13,7 @@ A personal book tracking web app. Add books to your library, mark them as read, 
 - Mark books as read/unread
 - Add/remove books from a "Want to Read" list
 - Reading List page filtered to your want-to-read books
+- Write, edit, and delete book reviews
 
 ---
 
@@ -79,3 +80,32 @@ Edit `.env.development` and restart `npm run dev`:
 |---|---|
 | Mock | Browser localStorage (`tomekeeper:books`) |
 | Real API | `data/tomekeeper.db` (SQLite, local file) |
+
+---
+
+## E2E Tests
+
+The project has a Playwright test suite covering authentication, library CRUD, reading list, and reviews.
+
+**Run all tests:**
+```bash
+cd e2e
+npx playwright test
+```
+
+**Run smoke tests only:**
+```bash
+npx playwright test --grep @smoke
+```
+
+**Run with visible browser:**
+```bash
+npx playwright test --headed
+```
+
+Tests require the app to be running in real API mode. Copy `e2e/.env.example` to `e2e/.env` and adjust `BASE_URL` / `API_URL` if your ports differ from the defaults.
+
+### CI
+
+- **Smoke gate** — runs on every push and pull request (Chromium only)
+- **Nightly regression** — runs at 2 AM UTC across Chromium, Firefox, and WebKit
