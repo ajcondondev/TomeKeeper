@@ -23,7 +23,7 @@ export function BookCard({
   const isOnList = book.status === BookStatus.WantToRead
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col" data-testid="book-card">
       {/* Cover */}
       <div className="flex h-40 items-center justify-center overflow-hidden rounded-t-xl bg-gray-100">
         {book.coverUrl ? (

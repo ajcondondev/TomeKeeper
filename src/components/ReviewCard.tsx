@@ -17,7 +17,7 @@ export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
   })
 
   return (
-    <Card className="flex flex-col gap-3 p-5">
+    <Card className="flex flex-col gap-3 p-5" data-testid="review-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="truncate text-sm font-semibold text-gray-900">{review.title}</h3>

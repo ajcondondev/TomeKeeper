@@ -67,3 +67,9 @@ data/*.db-wal
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# E2E test artifacts
+e2e/.auth/
+e2e/playwright-report/
+e2e/test-results/
+e2e/.env
