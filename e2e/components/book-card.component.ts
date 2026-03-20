@@ -1,0 +1,57 @@
+import { type Page, type Locator } from '@playwright/test';
+import { BaseComponent } from './base.component';
+
+/**
+ * A single BookCard as it appears in the Library or Reading List.
+ *
+ * The root Locator must be pre-scoped to the specific card element by the
+ * parent page (via `LibraryPage.getBookCard(title)` or `ReadingListPage.getBookCard(title)`).
+ *
+ * The Read/Unread and Want to Read/Remove buttons are toggles — their labels
+ * flip based on the book's current status. Expose both label variants via regex.
+ */
+export class BookCardComponent extends BaseComponent {
+  /** The h3 heading with the book title. */
+  readonly titleHeading: Locator;
+
+  /** The author paragraph beneath the title. */
+  readonly authorText: Locator;
+
+  /**
+   * The status badge (span) showing the current reading status:
+   * "Unread" | "Read" | "Want to Read".
+   */
+  readonly statusBadge: Locator;
+
+  /**
+   * Toggle button for the read/unread state.
+   * Label is "Read" when book is unread (click → marks read).
+   * Label is "Unread" when book is read (click → marks unread).
+   */
+  readonly readToggleButton: Locator;
+
+  /**
+   * Toggle button for the reading list state.
+   * Label is "Want to Read" when not on list (click → adds to list).
+   * Label is "Remove" when on reading list (click → removes from list).
+   */
+  readonly wantToReadToggleButton: Locator;
+
+  /** Permanently deletes the book. */
+  readonly deleteButton: Locator;
+
+  constructor(page: Page, root: Locator) {
+    super(page, root);
+    this.titleHeading = this.root.getByRole('heading', { level: 3 });
+    this.authorText = this.root.getByRole('paragraph').first();
+    // Status badge is a <span> (Badge component) with status text
+    this.statusBadge = this.root.locator('span').filter({
+      hasText: /^(Unread|Read|Want to Read)$/,
+    });
+    this.readToggleButton = this.root.getByRole('button', { name: /^(Read|Unread)$/ });
+    this.wantToReadToggleButton = this.root.getByRole('button', {
+      name: /^(Want to Read|Remove)$/,
+    });
+    this.deleteButton = this.root.getByRole('button', { name: 'Delete book' });
+  }
+}
