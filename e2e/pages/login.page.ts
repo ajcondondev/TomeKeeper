@@ -20,7 +20,7 @@ export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.emailInput = page.getByRole('textbox', { name: 'Email' });
-    this.passwordInput = page.getByLabel('Password');
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.submitButton = page.getByRole('button', { name: 'Sign in' });
     this.errorAlert = page.locator('p').filter({
       hasText: /Invalid email or password|Login failed/,

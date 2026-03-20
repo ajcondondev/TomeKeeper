@@ -27,7 +27,7 @@ export class RegisterPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.emailInput = page.getByRole('textbox', { name: 'Email' });
-    this.passwordInput = page.getByLabel('Password');
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.submitButton = page.getByRole('button', { name: 'Create account' });
     this.errorAlert = page.locator('p').filter({
       hasText: /Password must be|already exists|Registration failed/,
