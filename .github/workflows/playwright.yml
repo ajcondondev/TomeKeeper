@@ -28,16 +28,15 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      # npm ci is intentionally avoided here: package-lock.json is generated on
-      # Windows and does not contain a resolved entry for the Linux-specific
-      # Rollup native binary (@rollup/rollup-linux-x64-gnu). npm ci installs
-      # exactly what is in the lockfile and skips platform-specific optionals
-      # that were never recorded there, causing Vite's bundler to fail at
-      # startup. npm install resolves optional native deps for the current
-      # platform at install time while still honouring the lockfile for all
-      # other packages.
+      # package-lock.json was generated on Windows and contains no resolved entry
+      # for @rollup/rollup-linux-x64-gnu. Both npm ci and npm install honour the
+      # lockfile when it exists, so the Linux binary is never installed and Vite
+      # fails on startup. Removing the lockfile forces npm to do a full
+      # resolution for the current platform, which includes the Linux binary.
+      # The ~/.npm tarball cache (restored by setup-node above) keeps this fast.
+      # See: https://github.com/npm/cli/issues/4828
       - name: Install dependencies
-        run: npm install
+        run: rm -f package-lock.json && npm install
 
       - name: Install Playwright browsers (Chromium only)
         run: npx playwright install --with-deps chromium
