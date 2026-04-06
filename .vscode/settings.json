@@ -1,0 +1,3 @@
+{
+  "playwright.configFile": "e2e/playwright.config.ts"
+}

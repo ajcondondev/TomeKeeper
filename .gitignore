@@ -23,13 +23,17 @@ coverage/
 .env.*.local
 
 # Editor & OS
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# MCP session logs
+.playwright-mcp/
 
 # Logs
 *.log
@@ -73,3 +77,6 @@ e2e/.auth/
 e2e/playwright-report/
 e2e/test-results/
 e2e/.env
+
+# QA test case documentation (local only)
+.qa-test-cases/
