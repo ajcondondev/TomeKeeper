@@ -53,9 +53,11 @@ SETUP_GUIDE.md
 *.claude.md
 .claude/
 .clauderc
+.mcp.json
 docs/
 playwright-qa-guide.docx
 instructionsreadme.txt
+FEATURE_INVENTORY.md
 
 # Playwright auth state and profiles
 playwright/.auth/
