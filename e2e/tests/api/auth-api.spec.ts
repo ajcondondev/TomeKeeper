@@ -114,6 +114,25 @@ test.describe('Auth API Contract', () => {
 
       expect(response.status()).toBe(401);
     });
+
+    test('session cookie is invalidated — protected endpoints return 401 after logout @security', async ({
+      apiHelper,
+    }) => {
+      const user = TestDataFactory.user();
+      await apiHelper.registerRaw(user.email, user.password);
+      await apiHelper.loginRaw(user.email, user.password);
+
+      // Confirm the session is active.
+      const meBefore = await apiHelper.meRaw();
+      expect(meBefore.status()).toBe(200);
+
+      // Log out — the server should invalidate the session.
+      await apiHelper.logoutRaw();
+
+      // The same request context (same cookie jar) should now be rejected.
+      const meAfter = await apiHelper.meRaw();
+      expect(meAfter.status()).toBe(401);
+    });
   });
 
   // ---------------------------------------------------------------------------
