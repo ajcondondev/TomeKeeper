@@ -217,5 +217,86 @@ test.describe('Authentication', () => {
 
       await expect(page).toHaveURL(/\/login/);
     });
+
+    test('browser back after signing out does not restore the session', async ({
+      loginPage,
+      libraryPage,
+      apiHelper,
+      page,
+    }) => {
+      const user = TestDataFactory.user();
+      await apiHelper.registerRaw(user.email, user.password);
+
+      await loginPage.goto();
+      await loginPage.login(user.email, user.password);
+
+      await libraryPage.sidebar.signOut();
+      await expect(page).toHaveURL(/\/login/);
+
+      await page.goBack();
+
+      await expect(page).toHaveURL(/\/login/);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Route Protection (unauthenticated direct URL access)
+  // -------------------------------------------------------------------------
+
+  test.describe('Route Protection', () => {
+    test('unauthenticated visit to /library redirects to login', async ({ page }) => {
+      await page.goto('/library');
+
+      await expect(page).toHaveURL(/\/login/);
+    });
+
+    test('unauthenticated visit to /reading-list redirects to login', async ({ page }) => {
+      await page.goto('/reading-list');
+
+      await expect(page).toHaveURL(/\/login/);
+    });
+
+    test('unauthenticated visit to /reviews redirects to login', async ({ page }) => {
+      await page.goto('/reviews');
+
+      await expect(page).toHaveURL(/\/login/);
+    });
+
+    test('unauthenticated visit to / redirects to login', async ({ page }) => {
+      await page.goto('/');
+
+      await expect(page).toHaveURL(/\/login/);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Root redirect (authenticated)
+  // -------------------------------------------------------------------------
+
+  test.describe('Root Redirect', () => {
+    // These tests need an authenticated session — override back to auth state.
+    // The outer describe already uses storageState: { cookies: [], origins: [] },
+    // so we import from the shared authFile that the setup project produces.
+    test('authenticated visit to / redirects to library', async ({ page }) => {
+      // page already carries the storageState from the outer test.use() which
+      // clears cookies. We need the shared auth session for this test, so we
+      // log in inline.
+      const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
+      const email = process.env.TEST_EMAIL ?? 'e2e-shared@tomekeeper.dev';
+      const password = process.env.TEST_PASSWORD ?? 'SecurePass123!';
+
+      // Ensure the shared user exists (idempotent).
+      await page.request.post(`${apiUrl}/api/auth/register`, { data: { email, password } });
+
+      await page.goto('/login');
+      await page.getByRole('textbox', { name: 'Email' }).fill(email);
+      await page.getByRole('textbox', { name: 'Password' }).fill(password);
+      await page.getByRole('button', { name: 'Sign in' }).click();
+      await page.waitForURL('**/library');
+
+      await page.goto('/');
+
+      await expect(page).toHaveURL(/\/library/);
+    });
   });
 });
