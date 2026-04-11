@@ -1,6 +1,10 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import { TestDataFactory } from '../../utils';
 
+// ---------------------------------------------------------------------------
+// Reading List — authenticated tests using the shared test user
+// ---------------------------------------------------------------------------
+
 test.describe('Reading List', () => {
   let bookIds: string[] = [];
 
@@ -12,91 +16,61 @@ test.describe('Reading List', () => {
   });
 
   // -------------------------------------------------------------------------
-  // Visibility
+  // Visibility and Filtering
   // -------------------------------------------------------------------------
 
-  test('shows books with want-to-read status @smoke', async ({
-    readingListPage,
-    apiHelper,
-  }) => {
+  test('shows books with want-to-read status @smoke', async ({ readingListPage, apiHelper }) => {
     const book = await apiHelper.createBook(TestDataFactory.book());
     await apiHelper.updateBook(book.id, { status: 'want-to-read' });
     bookIds.push(book.id);
 
     await readingListPage.goto();
 
-    const card = readingListPage.getBookCard(book.title);
-
-    await expect(card.titleHeading).toBeVisible();
-    await expect(card.statusBadge).toHaveText('Want to Read');
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).statusBadge).toHaveText('Want to Read');
   });
 
-  test('does not show books with unread or read status', async ({
-    readingListPage,
-    apiHelper,
-  }) => {
-    const unreadBook = await apiHelper.createBook(TestDataFactory.book());
-    const readBook = await apiHelper.createBook(TestDataFactory.book());
-    await apiHelper.updateBook(readBook.id, { status: 'read' });
-    bookIds.push(unreadBook.id, readBook.id);
-
-    await readingListPage.goto();
-
-    await expect(
-      readingListPage.getBookCard(unreadBook.title).titleHeading,
-    ).not.toBeVisible();
-    await expect(
-      readingListPage.getBookCard(readBook.title).titleHeading,
-    ).not.toBeVisible();
-  });
-
-  test('shows empty state when no want-to-read books exist', async ({
-    readingListPage,
-    apiHelper,
-  }) => {
-    // Ensure any want-to-read books for this test context are absent.
-    // Create a book and leave it as unread so we have a known clean slate.
+  test('does not show books with unread status', async ({ readingListPage, apiHelper }) => {
     const book = await apiHelper.createBook(TestDataFactory.book());
     bookIds.push(book.id);
 
-    // Navigate and verify no want-to-read books are displayed.
-    // (The shared user might have pre-existing want-to-read books from manual testing;
-    // this test is most reliable when run against a clean account.)
     await readingListPage.goto();
 
-    // Only assert empty state if the page doesn't show a book count.
-    const isEmptyState = await readingListPage.emptyStateMessage.isVisible();
-    if (isEmptyState) {
-      await expect(readingListPage.goToLibraryButton).toBeVisible();
-    } else {
-      // A want-to-read book already existed — mark our book to confirm the
-      // count is at least visible.
-      await expect(readingListPage.bookCount).toBeVisible();
-    }
+    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
   });
 
-  test('empty state Go to Library button navigates to library', async ({
-    readingListPage,
-    libraryPage,
-    page,
-  }) => {
+  test('does not show books with read status', async ({ readingListPage, apiHelper }) => {
+    const book = await apiHelper.createBook(TestDataFactory.book());
+    await apiHelper.updateBook(book.id, { status: 'read' });
+    bookIds.push(book.id);
+
     await readingListPage.goto();
 
-    // Only run this assertion when the empty state is actually visible.
-    const isEmptyState = await readingListPage.emptyStateMessage.isVisible();
-    if (!isEmptyState) {
-      test.skip();
-      return;
-    }
+    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+  });
 
-    await readingListPage.goToLibraryButton.click();
+  test('shows correct book count for want-to-read books', async ({
+    readingListPage,
+    apiHelper,
+  }) => {
+    const bookA = await apiHelper.createBook(TestDataFactory.book());
+    const bookB = await apiHelper.createBook(TestDataFactory.book());
+    const bookC = await apiHelper.createBook(TestDataFactory.book());
+    await apiHelper.updateBook(bookA.id, { status: 'want-to-read' });
+    await apiHelper.updateBook(bookB.id, { status: 'want-to-read' });
+    await apiHelper.updateBook(bookC.id, { status: 'want-to-read' });
+    bookIds.push(bookA.id, bookB.id, bookC.id);
 
-    await expect(page).toHaveURL(/\/library/);
-    await expect(libraryPage.heading).toBeVisible();
+    await readingListPage.goto();
+
+    const countText = await readingListPage.bookCount.textContent() ?? '';
+    const count = parseInt(countText);
+
+    expect(count).toBeGreaterThanOrEqual(3);
   });
 
   // -------------------------------------------------------------------------
-  // Status Toggle Behavior
+  // Status Transitions
   // -------------------------------------------------------------------------
 
   test('removes book from reading list when Remove is clicked @smoke', async ({
@@ -108,11 +82,9 @@ test.describe('Reading List', () => {
     bookIds.push(book.id);
 
     await readingListPage.goto();
-    const card = readingListPage.getBookCard(book.title);
+    await readingListPage.getBookCard(book.title).wantToReadToggleButton.click();
 
-    await card.wantToReadToggleButton.click();
-
-    await expect(card.titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
   });
 
   test('marking a want-to-read book as read removes it from the reading list', async ({
@@ -124,10 +96,107 @@ test.describe('Reading List', () => {
     bookIds.push(book.id);
 
     await readingListPage.goto();
-    const card = readingListPage.getBookCard(book.title);
+    await readingListPage.getBookCard(book.title).readToggleButton.click();
 
-    await card.readToggleButton.click();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+  });
 
-    await expect(card.titleHeading).not.toBeVisible();
+  // -------------------------------------------------------------------------
+  // Library Synchronisation
+  // -------------------------------------------------------------------------
+
+  test('book added to reading list from library appears on reading list', async ({
+    libraryPage,
+    readingListPage,
+    apiHelper,
+  }) => {
+    const book = await apiHelper.createBook(TestDataFactory.book());
+    bookIds.push(book.id);
+
+    await libraryPage.goto();
+    await libraryPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    await readingListPage.goto();
+
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeVisible();
+  });
+
+  test('book removed from reading list reverts to Unread status in library', async ({
+    readingListPage,
+    libraryPage,
+    apiHelper,
+  }) => {
+    const book = await apiHelper.createBook(TestDataFactory.book());
+    await apiHelper.updateBook(book.id, { status: 'want-to-read' });
+    bookIds.push(book.id);
+
+    await readingListPage.goto();
+    await readingListPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    await libraryPage.goto();
+
+    await expect(libraryPage.getBookCard(book.title).statusBadge).toHaveText('Unread');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Reading List Empty State
+//
+// These tests need a guaranteed empty reading list (no want-to-read books),
+// so they use a fresh registered user rather than the shared session.
+// ---------------------------------------------------------------------------
+
+test.describe('Reading List — Empty State', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('displays empty state message and Go to Library button when no want-to-read books', async ({
+    registerPage,
+    readingListPage,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await readingListPage.goto();
+
+    await expect(readingListPage.emptyStateMessage).toBeVisible();
+    await expect(readingListPage.goToLibraryButton).toBeVisible();
+  });
+
+  test('Go to Library button navigates to the Library page', async ({
+    registerPage,
+    readingListPage,
+    libraryPage,
+    page,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await readingListPage.goto();
+    await readingListPage.goToLibraryButton.click();
+
+    await expect(page).toHaveURL(/\/library/);
+    await expect(libraryPage.heading).toBeVisible();
+  });
+
+  test('removing the last want-to-read book transitions back to empty state', async ({
+    registerPage,
+    libraryPage,
+    readingListPage,
+  }) => {
+    // Register a fresh user so we control the exact reading-list state.
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    // Add a book and mark it as want-to-read via the library UI.
+    const book = TestDataFactory.book();
+    await libraryPage.goto();
+    await libraryPage.addBook(book);
+    await libraryPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    // Remove it from the reading list — the empty state should reappear.
+    await readingListPage.goto();
+    await readingListPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    await expect(readingListPage.emptyStateMessage).toBeVisible();
   });
 });
