@@ -228,3 +228,76 @@ test.describe('Reviews CRUD', () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Reviews Empty State
+//
+// These tests need a guaranteed empty reviews list, so they register a fresh
+// user inline rather than using the shared authenticated session.
+// ---------------------------------------------------------------------------
+
+test.describe('Reviews — Empty State', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('displays empty state message and Add Review button when no reviews exist', async ({
+    registerPage,
+    reviewsPage,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await reviewsPage.goto();
+
+    await expect(reviewsPage.emptyStateMessage).toBeVisible();
+    await expect(reviewsPage.emptyStateButton).toBeVisible();
+  });
+
+  test('new account shows no review count', async ({ registerPage, reviewsPage }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await reviewsPage.goto();
+
+    await expect(reviewsPage.reviewCount).not.toBeVisible();
+  });
+
+  test('empty state Add Review button opens the Add Review modal', async ({
+    registerPage,
+    reviewsPage,
+    page,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await reviewsPage.goto();
+    await reviewsPage.emptyStateButton.click();
+
+    await expect(page.getByRole('dialog', { name: 'Add a Review' })).toBeVisible();
+  });
+
+  test('adding the first review replaces the empty state with the review card', async ({
+    registerPage,
+    libraryPage,
+    reviewsPage,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    // A review requires a book — add one via the Library UI.
+    const book = TestDataFactory.book();
+    await libraryPage.goto();
+    await libraryPage.addBook(book);
+
+    // Add the first review via the empty state CTA.
+    await reviewsPage.goto();
+    await reviewsPage.emptyStateButton.click();
+    await reviewsPage.addReviewModal.fillAndSubmit({
+      bookOption: TestDataFactory.reviewBookOption(book.title, book.author),
+      title: 'My First Review',
+      review: 'This book was excellent.',
+    });
+
+    await expect(reviewsPage.emptyStateMessage).not.toBeVisible();
+    await expect(reviewsPage.getReviewCard('My First Review').titleHeading).toBeVisible();
+  });
+});
