@@ -246,3 +246,61 @@ test.describe('Library CRUD', () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Library Empty State
+//
+// These tests need a guaranteed empty library, so they use a fresh user
+// registered inline rather than the shared authenticated session.
+// ---------------------------------------------------------------------------
+
+test.describe('Library Empty State', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('displays empty state message and Add Book button when library has no books', async ({
+    registerPage,
+    libraryPage,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await expect(libraryPage.emptyStateMessage).toBeVisible();
+    await expect(libraryPage.emptyStateButton).toBeVisible();
+  });
+
+  test('empty state Add Book button opens the Add Book modal', async ({
+    registerPage,
+    libraryPage,
+    page,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await libraryPage.emptyStateButton.click();
+
+    await expect(page.getByRole('dialog', { name: 'Add a Book' })).toBeVisible();
+  });
+
+  test('adding the first book replaces the empty state with the book card', async ({
+    registerPage,
+    libraryPage,
+  }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    const book = TestDataFactory.book();
+    await libraryPage.emptyStateButton.click();
+    await libraryPage.addBookModal.fillAndSubmit(book);
+
+    await expect(libraryPage.emptyStateMessage).not.toBeVisible();
+    await expect(libraryPage.getBookCard(book.title).titleHeading).toBeVisible();
+  });
+
+  test('new account starts with an empty library', async ({ registerPage, libraryPage }) => {
+    await registerPage.goto();
+    await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
+
+    await expect(libraryPage.emptyStateMessage).toBeVisible();
+    await expect(libraryPage.bookCount).not.toBeVisible();
+  });
+});
