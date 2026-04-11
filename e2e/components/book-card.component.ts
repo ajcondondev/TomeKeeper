@@ -40,6 +40,12 @@ export class BookCardComponent extends BaseComponent {
   /** Permanently deletes the book. */
   readonly deleteButton: Locator;
 
+  /**
+   * The fallback placeholder icon shown when the cover URL is absent or fails to load.
+   * Only present in the DOM when the img is not rendered.
+   */
+  readonly coverFallbackIcon: Locator;
+
   constructor(page: Page, root: Locator) {
     super(page, root);
     this.titleHeading = this.root.getByRole('heading', { level: 3 });
@@ -54,5 +60,6 @@ export class BookCardComponent extends BaseComponent {
       name: /^(Want to Read|Remove)$/,
     });
     this.deleteButton = this.root.getByRole('button', { name: 'Delete book' });
+    this.coverFallbackIcon = this.root.getByTestId('cover-fallback');
   }
 }

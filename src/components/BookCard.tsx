@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BookOpen, BookMarked, CheckCheck, Trash2, Undo2 } from 'lucide-react'
 import type { Book } from '@/types/book.types'
 import { BookStatus } from '@/types/book.types'
@@ -21,19 +22,21 @@ export function BookCard({
 }: BookCardProps) {
   const isRead = book.status === BookStatus.Read
   const isOnList = book.status === BookStatus.WantToRead
+  const [coverError, setCoverError] = useState(false)
 
   return (
     <Card className="flex flex-col" data-testid="book-card">
       {/* Cover */}
       <div className="flex h-40 items-center justify-center overflow-hidden rounded-t-xl bg-gray-100">
-        {book.coverUrl ? (
+        {book.coverUrl && !coverError ? (
           <img
             src={book.coverUrl}
             alt={`Cover for ${book.title}`}
             className="h-full w-full object-cover"
+            onError={() => setCoverError(true)}
           />
         ) : (
-          <BookOpen className="h-12 w-12 text-gray-300" />
+          <BookOpen className="h-12 w-12 text-gray-300" data-testid="cover-fallback" />
         )}
       </div>
 
