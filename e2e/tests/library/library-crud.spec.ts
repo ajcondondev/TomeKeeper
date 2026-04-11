@@ -248,6 +248,54 @@ test.describe('Library CRUD', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Cover Image Handling
+// ---------------------------------------------------------------------------
+
+test.describe('Cover Image Handling', () => {
+  let bookIds: string[] = [];
+
+  test.afterEach(async ({ apiHelper }) => {
+    for (const id of bookIds) {
+      await apiHelper.deleteBook(id).catch(() => {});
+    }
+    bookIds = [];
+  });
+
+  test('shows fallback icon when cover URL fails to load @regression', async ({
+    libraryPage,
+    apiHelper,
+    page,
+  }) => {
+    const book = await apiHelper.createBook(
+      TestDataFactory.book({ coverUrl: 'https://example.com/does-not-exist.jpg' }),
+    );
+    bookIds.push(book.id);
+
+    await page.route('https://example.com/does-not-exist.jpg', route =>
+      route.fulfill({ status: 404 }),
+    );
+
+    await libraryPage.goto();
+
+    await expect(libraryPage.getBookCard(book.title).coverFallbackIcon).toBeVisible();
+  });
+
+  test('shows fallback icon for a book with no cover URL @regression', async ({
+    libraryPage,
+    apiHelper,
+  }) => {
+    const book = await apiHelper.createBook(
+      TestDataFactory.book({ coverUrl: undefined }),
+    );
+    bookIds.push(book.id);
+
+    await libraryPage.goto();
+
+    await expect(libraryPage.getBookCard(book.title).coverFallbackIcon).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Library Empty State
 //
 // These tests need a guaranteed empty library, so they use a fresh user
