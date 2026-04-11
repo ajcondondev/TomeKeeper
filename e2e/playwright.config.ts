@@ -74,7 +74,7 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/],
+      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/, /.*\/mobile\/.*/],
     },
     {
       name: 'firefox',
@@ -83,7 +83,7 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/],
+      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/, /.*\/mobile\/.*/],
     },
     {
       name: 'webkit',
@@ -92,18 +92,8 @@ export default defineConfig({
         storageState: authFile,
       },
       dependencies: ['setup'],
-      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/],
+      testIgnore: [/.*\.visual\.spec\.ts/, /.*\.a11y\.spec\.ts/, /.*\/mobile\/.*/],
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
 
     /* Test against branded browsers. */
     // {
@@ -139,6 +129,19 @@ export default defineConfig({
       },
       dependencies: ['setup'],
       testMatch: /.*\.a11y\.spec\.ts/,
+    },
+
+    // ------------------------------------------------------------------
+    // Mobile — iPhone 14 viewport, tests/mobile/** only
+    // ------------------------------------------------------------------
+    {
+      name: 'mobile',
+      use: {
+        ...devices['iPhone 14'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testMatch: /.*\/mobile\/.*/,
     },
   ],
 
