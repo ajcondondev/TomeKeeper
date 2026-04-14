@@ -3,7 +3,7 @@ import { ApiHelper, TestDataFactory } from '../../utils';
 
 const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
 
-test.describe('Books API Contract', () => {
+test.describe('Books API Contract', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
 
   test.afterEach(async ({ apiHelper }) => {
@@ -26,11 +26,11 @@ test.describe('Books API Contract', () => {
 
       const response = await ctx.get(`${apiUrl}/api/books`);
 
-      await ctx.dispose();
-
       expect(response.status()).toBe(200);
       const body = await response.json();
       expect(body.data).toEqual([]);
+
+      await ctx.dispose();
     });
 
     test('returns only the current user\'s books', async ({ apiHelper, playwright }) => {

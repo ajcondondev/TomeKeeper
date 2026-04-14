@@ -3,7 +3,7 @@ import { ApiHelper, TestDataFactory } from '../../utils';
 
 const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
 
-test.describe('Reviews API Contract', () => {
+test.describe('Reviews API Contract', { tag: '@regression' }, () => {
   let bookId: string | undefined;
   let reviewIds: string[] = [];
 
@@ -37,12 +37,13 @@ test.describe('Reviews API Contract', () => {
       const book = await new ApiHelper(ctx).createBook(TestDataFactory.book());
 
       const response = await ctx.get(`${apiUrl}/api/reviews`);
-      await new ApiHelper(ctx).deleteBook(book.id).catch(() => {});
-      await ctx.dispose();
 
       expect(response.status()).toBe(200);
       const body = await response.json();
       expect(body.data).toEqual([]);
+
+      await new ApiHelper(ctx).deleteBook(book.id).catch(() => {});
+      await ctx.dispose();
     });
 
     test('returns all reviews for the current user', async ({ apiHelper }) => {

@@ -4,7 +4,7 @@ import { TestDataFactory } from '../../utils';
 // All tests in this file start unauthenticated — auth state is managed per-test.
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.describe('Auth API Contract', () => {
+test.describe('Auth API Contract', { tag: '@regression' }, () => {
 
   // ---------------------------------------------------------------------------
   // POST /api/auth/register
@@ -54,15 +54,25 @@ test.describe('Auth API Contract', () => {
   // ---------------------------------------------------------------------------
 
   test.describe('POST /api/auth/login', () => {
-    test('returns 200 and sets a session cookie for valid credentials @smoke', async ({ apiHelper }) => {
+    test('returns 200 and sets a session cookie for valid credentials @smoke', async ({ playwright }) => {
+      const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
       const user = TestDataFactory.user();
-      await apiHelper.registerRaw(user.email, user.password);
 
-      const response = await apiHelper.loginRaw(user.email, user.password);
+      // Register in a separate context so the login context starts without a session cookie.
+      // (The register endpoint also sets req.session.userId, which would cause the shared
+      // context to already hold connect.sid — preventing a new Set-Cookie on login.)
+      const setupCtx = await playwright.request.newContext();
+      await setupCtx.post(`${apiUrl}/api/auth/register`, { data: user });
+      await setupCtx.dispose();
+
+      const loginCtx = await playwright.request.newContext();
+      const response = await loginCtx.post(`${apiUrl}/api/auth/login`, { data: user });
 
       expect(response.status()).toBe(200);
       const setCookie = response.headers()['set-cookie'];
       expect(setCookie).toBeTruthy();
+
+      await loginCtx.dispose();
     });
 
     test('returns 401 for a wrong password', async ({ apiHelper }) => {
