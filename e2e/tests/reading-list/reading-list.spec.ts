@@ -5,7 +5,7 @@ import { TestDataFactory } from '../../utils';
 // Reading List — authenticated tests using the shared test user
 // ---------------------------------------------------------------------------
 
-test.describe('Reading List', () => {
+test.describe('Reading List', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
 
   test.afterEach(async ({ apiHelper }) => {
@@ -146,7 +146,7 @@ test.describe('Reading List', () => {
 // so they use a fresh registered user rather than the shared session.
 // ---------------------------------------------------------------------------
 
-test.describe('Reading List — Empty State', () => {
+test.describe('Reading List — Empty State', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('displays empty state message and Go to Library button when no want-to-read books', async ({

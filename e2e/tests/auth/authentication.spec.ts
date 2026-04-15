@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import { TestDataFactory } from '../../utils';
 
-test.describe('Authentication', () => {
+test.describe('Authentication', { tag: '@regression' }, () => {
   // Auth tests own the auth flow — start every test unauthenticated.
   test.use({ storageState: { cookies: [], origins: [] } });
 

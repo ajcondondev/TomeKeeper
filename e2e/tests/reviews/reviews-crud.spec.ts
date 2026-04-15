@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import { TestDataFactory } from '../../utils';
 
-test.describe('Reviews CRUD', () => {
+test.describe('Reviews CRUD', { tag: '@regression' }, () => {
   let bookId: string | undefined;
   let reviewIds: string[] = [];
 
@@ -236,7 +236,7 @@ test.describe('Reviews CRUD', () => {
 // user inline rather than using the shared authenticated session.
 // ---------------------------------------------------------------------------
 
-test.describe('Reviews — Empty State', () => {
+test.describe('Reviews — Empty State', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('displays empty state message and Add Review button when no reviews exist', async ({

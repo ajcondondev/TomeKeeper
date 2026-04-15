@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import { TestDataFactory } from '../../utils';
 
-test.describe('Library CRUD', () => {
+test.describe('Library CRUD', { tag: '@regression' }, () => {
   // Tracks book IDs created during each test so afterEach can clean up.
   let bookIds: string[] = [];
 
@@ -251,7 +251,7 @@ test.describe('Library CRUD', () => {
 // Cover Image Handling
 // ---------------------------------------------------------------------------
 
-test.describe('Cover Image Handling', () => {
+test.describe('Cover Image Handling', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
 
   test.afterEach(async ({ apiHelper }) => {
@@ -302,7 +302,7 @@ test.describe('Cover Image Handling', () => {
 // registered inline rather than the shared authenticated session.
 // ---------------------------------------------------------------------------
 
-test.describe('Library Empty State', () => {
+test.describe('Library Empty State', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('displays empty state message and Add Book button when library has no books', async ({

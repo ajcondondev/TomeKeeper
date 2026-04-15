@@ -22,9 +22,18 @@ const authFile = path.join(__dirname, '.auth', 'user.json');
  *  - webkit        — full E2E tests in Safari/WebKit (authenticated)
  *  - visual        — screenshot regression tests, Chromium only (*.visual.spec.ts)
  *  - accessibility — axe-core scans, Chromium only (*.a11y.spec.ts)
+ *  - mobile        — mobile viewport tests, iPhone 14 (tests/mobile/**)
  *
- * Auth tests (login.spec.ts, register.spec.ts) clear storageState per-test
- * via `test.use({ storageState: { cookies: [], origins: [] } })`.
+ * Tag tiers (use with --grep):
+ *  @smoke      — critical path, fast CI gate (~15 tests)
+ *                npx playwright test --grep @smoke
+ *  @regression — full functional suite, all important scenarios
+ *                npx playwright test --grep @regression
+ *  @security   — auth/session security properties
+ *  @edge       — edge cases and unusual paths
+ *
+ * Auth tests clear storageState per-test via
+ * `test.use({ storageState: { cookies: [], origins: [] } })`.
  */
 export default defineConfig({
   testDir: './tests',
