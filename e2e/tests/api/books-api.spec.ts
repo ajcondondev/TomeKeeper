@@ -50,7 +50,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
     });
 
     test('returns 401 for unauthenticated request', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
 
       const response = await ctx.get(`${apiUrl}/api/books`);
       await ctx.dispose();
@@ -92,7 +92,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
     });
 
     test('returns 401 for unauthenticated request', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
 
       const response = await ctx.post(`${apiUrl}/api/books`, {
         data: { title: 'Test', author: 'Author' },
@@ -146,7 +146,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
       const book = await apiHelper.createBook(TestDataFactory.book());
       bookIds.push(book.id);
 
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const response = await ctx.get(`${apiUrl}/api/books/${book.id}`);
       await ctx.dispose();
 
@@ -204,7 +204,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
       const book = await apiHelper.createBook(TestDataFactory.book());
       bookIds.push(book.id);
 
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const response = await ctx.patch(`${apiUrl}/api/books/${book.id}`, {
         data: { status: 'read' },
       });
@@ -246,7 +246,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
       const book = await apiHelper.createBook(TestDataFactory.book());
       bookIds.push(book.id);
 
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const response = await ctx.delete(`${apiUrl}/api/books/${book.id}`);
       await ctx.dispose();
 

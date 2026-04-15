@@ -100,7 +100,7 @@ test.describe('Find Cover — Open Library Integration', () => {
     );
 
     expect(capturedUrl).toContain('title=Dune');
-    expect(capturedUrl).toContain('author=Frank+Herbert');
+    expect(capturedUrl).toContain('author=Frank%20Herbert');
   });
 
   // -------------------------------------------------------------------------

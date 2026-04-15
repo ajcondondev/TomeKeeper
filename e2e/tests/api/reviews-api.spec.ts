@@ -67,7 +67,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
       const reviewA = await apiHelper.createReview(TestDataFactory.review(bookId!));
       reviewIds.push(reviewA.id);
 
-      const ctxB = await playwright.request.newContext();
+      const ctxB = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const userB = TestDataFactory.user();
       await ctxB.post(`${apiUrl}/api/auth/register`, { data: userB });
       await ctxB.post(`${apiUrl}/api/auth/login`, { data: userB });
@@ -81,7 +81,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
     });
 
     test('returns 401 for unauthenticated request', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
 
       const response = await ctx.get(`${apiUrl}/api/reviews`);
       await ctx.dispose();
@@ -151,7 +151,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
     });
 
     test('returns 401 for unauthenticated request', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
 
       const response = await ctx.post(`${apiUrl}/api/reviews`, {
         data: { bookId: bookId!, title: 'A Title', review: 'A review.' },
@@ -204,7 +204,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
       const review = await apiHelper.createReview(TestDataFactory.review(bookId!));
       reviewIds.push(review.id);
 
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const response = await ctx.patch(`${apiUrl}/api/reviews/${review.id}`, {
         data: { title: 'New Title' },
       });
@@ -246,7 +246,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
       const review = await apiHelper.createReview(TestDataFactory.review(bookId!));
       reviewIds.push(review.id);
 
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const response = await ctx.delete(`${apiUrl}/api/reviews/${review.id}`);
       await ctx.dispose();
 
