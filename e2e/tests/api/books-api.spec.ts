@@ -19,7 +19,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
 
   test.describe('GET /api/books', () => {
     test('returns 200 with empty array for a new user @smoke', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const user = TestDataFactory.user();
       await ctx.post(`${apiUrl}/api/auth/register`, { data: user });
       await ctx.post(`${apiUrl}/api/auth/login`, { data: user });
@@ -37,7 +37,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
       const bookA = await apiHelper.createBook(TestDataFactory.book());
       bookIds.push(bookA.id);
 
-      const ctxB = await playwright.request.newContext();
+      const ctxB = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const userB = TestDataFactory.user();
       await ctxB.post(`${apiUrl}/api/auth/register`, { data: userB });
       await ctxB.post(`${apiUrl}/api/auth/login`, { data: userB });
@@ -130,7 +130,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
       const book = await apiHelper.createBook(TestDataFactory.book());
       bookIds.push(book.id);
 
-      const ctxB = await playwright.request.newContext();
+      const ctxB = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const userB = TestDataFactory.user();
       await ctxB.post(`${apiUrl}/api/auth/register`, { data: userB });
       await ctxB.post(`${apiUrl}/api/auth/login`, { data: userB });

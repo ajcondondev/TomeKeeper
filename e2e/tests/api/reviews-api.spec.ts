@@ -30,7 +30,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
 
   test.describe('GET /api/reviews', () => {
     test('returns 200 with empty array for a user with no reviews @smoke', async ({ playwright }) => {
-      const ctx = await playwright.request.newContext();
+      const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const user = TestDataFactory.user();
       await ctx.post(`${apiUrl}/api/auth/register`, { data: user });
       await ctx.post(`${apiUrl}/api/auth/login`, { data: user });
@@ -73,9 +73,9 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
       await ctxB.post(`${apiUrl}/api/auth/login`, { data: userB });
 
       const reviewsB = await ctxB.get(`${apiUrl}/api/reviews`);
-      await ctxB.dispose();
 
       const body = await reviewsB.json();
+      await ctxB.dispose();
       const ids = body.data.map((r: { id: string }) => r.id);
       expect(ids).not.toContain(reviewA.id);
     });
