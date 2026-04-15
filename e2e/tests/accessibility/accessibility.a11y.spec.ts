@@ -8,10 +8,10 @@ const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 // Auth pages — unauthenticated
 // ---------------------------------------------------------------------------
 
-test.describe('Accessibility — Auth Pages', () => {
+test.describe('Accessibility — Auth Pages', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('login page has no WCAG violations @smoke', async ({ loginPage, page }) => {
+  test('login page has no WCAG violations', { tag: '@smoke' }, async ({ loginPage, page }) => {
     await loginPage.goto();
 
     const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
@@ -66,7 +66,7 @@ test.describe('Accessibility — Auth Pages', () => {
 // Authenticated pages
 // ---------------------------------------------------------------------------
 
-test.describe('Accessibility — Authenticated Pages', () => {
+test.describe('Accessibility — Authenticated Pages', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
   let reviewIds: string[] = [];
 
@@ -82,7 +82,7 @@ test.describe('Accessibility — Authenticated Pages', () => {
     bookIds = [];
   });
 
-  test('library page (empty) has no WCAG violations @smoke', async ({ libraryPage, page }) => {
+  test('library page (empty) has no WCAG violations', { tag: '@smoke' }, async ({ libraryPage, page }) => {
     await libraryPage.goto();
 
     const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
@@ -143,7 +143,7 @@ test.describe('Accessibility — Authenticated Pages', () => {
 // Modal accessibility
 // ---------------------------------------------------------------------------
 
-test.describe('Accessibility — Modals', () => {
+test.describe('Accessibility — Modals', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
   let reviewIds: string[] = [];
 
@@ -351,7 +351,7 @@ test.describe('Accessibility — Modals', () => {
 // Keyboard navigation
 // ---------------------------------------------------------------------------
 
-test.describe('Accessibility — Keyboard Navigation', () => {
+test.describe('Accessibility — Keyboard Navigation', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('user can submit login form using Tab and Enter @critical', async ({

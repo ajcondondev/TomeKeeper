@@ -5,10 +5,10 @@ import { TestDataFactory } from '../../utils';
 // Auth pages — no session required
 // ---------------------------------------------------------------------------
 
-test.describe('Visual — Auth Pages', () => {
+test.describe('Visual — Auth Pages', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('login page renders correctly @smoke', async ({ loginPage }) => {
+  test('login page renders correctly', { tag: '@smoke' }, async ({ loginPage }) => {
     await loginPage.goto();
 
     await expect(loginPage.page).toHaveScreenshot('login-page.png');
@@ -41,7 +41,7 @@ test.describe('Visual — Auth Pages', () => {
 // Empty states — fresh users to guarantee no existing data
 // ---------------------------------------------------------------------------
 
-test.describe('Visual — Empty States', () => {
+test.describe('Visual — Empty States', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('library page renders correctly in empty state', async ({ registerPage, libraryPage }) => {
@@ -82,7 +82,7 @@ test.describe('Visual — Empty States', () => {
 // Populated pages — shared authenticated user, data created and cleaned up per test
 // ---------------------------------------------------------------------------
 
-test.describe('Visual — Populated Pages', () => {
+test.describe('Visual — Populated Pages', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
   let reviewIds: string[] = [];
 
@@ -98,7 +98,7 @@ test.describe('Visual — Populated Pages', () => {
     bookIds = [];
   });
 
-  test('library page renders correctly with books @smoke', async ({ libraryPage, apiHelper }) => {
+  test('library page renders correctly with books', { tag: '@smoke' }, async ({ libraryPage, apiHelper }) => {
     const book = await apiHelper.createBook(
       TestDataFactory.book({ title: 'The Great Novel', author: 'Jane Author' }),
     );
@@ -191,7 +191,7 @@ test.describe('Visual — Populated Pages', () => {
 // Modals — shared authenticated user
 // ---------------------------------------------------------------------------
 
-test.describe('Visual — Modals', () => {
+test.describe('Visual — Modals', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
   let reviewIds: string[] = [];
 

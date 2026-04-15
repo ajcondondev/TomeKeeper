@@ -10,20 +10,20 @@ const OPEN_LIBRARY_SEARCH = '**/openlibrary.org/search.json*';
 // hermetic and does not depend on the external API being available.
 // ---------------------------------------------------------------------------
 
-test.describe('Find Cover — Open Library Integration', () => {
+test.describe('Find Cover — Open Library Integration', { tag: '@regression' }, () => {
 
   // -------------------------------------------------------------------------
   // Button state
   // -------------------------------------------------------------------------
 
-  test('Find Cover button is disabled when title is empty @smoke', async ({ libraryPage }) => {
+  test('Find Cover button is disabled when title is empty', { tag: '@smoke' }, async ({ libraryPage }) => {
     await libraryPage.goto();
     await libraryPage.addBookButton.click();
 
     await expect(libraryPage.addBookModal.findCoverButton).toBeDisabled();
   });
 
-  test('Find Cover button becomes enabled after a title is entered @regression', async ({
+  test('Find Cover button becomes enabled after a title is entered', async ({
     libraryPage,
   }) => {
     await libraryPage.goto();
@@ -34,7 +34,7 @@ test.describe('Find Cover — Open Library Integration', () => {
     await expect(libraryPage.addBookModal.findCoverButton).toBeEnabled();
   });
 
-  test('Find Cover button becomes disabled again when title is cleared @regression', async ({
+  test('Find Cover button becomes disabled again when title is cleared', async ({
     libraryPage,
   }) => {
     await libraryPage.goto();
@@ -52,7 +52,7 @@ test.describe('Find Cover — Open Library Integration', () => {
   // Happy path
   // -------------------------------------------------------------------------
 
-  test('populates cover URL field when Open Library returns a cover ID @smoke', async ({
+  test('populates cover URL field when Open Library returns a cover ID', { tag: '@smoke' }, async ({
     libraryPage,
     page,
   }) => {
@@ -74,7 +74,7 @@ test.describe('Find Cover — Open Library Integration', () => {
     );
   });
 
-  test('includes title and author in the Open Library request @regression', async ({
+  test('includes title and author in the Open Library request', async ({
     libraryPage,
     page,
   }) => {
@@ -107,7 +107,7 @@ test.describe('Find Cover — Open Library Integration', () => {
   // Error states
   // -------------------------------------------------------------------------
 
-  test('shows "No cover found" error when Open Library returns no results @smoke', async ({
+  test('shows "No cover found" error when Open Library returns no results', { tag: '@smoke' }, async ({
     libraryPage,
     page,
   }) => {
@@ -128,7 +128,7 @@ test.describe('Find Cover — Open Library Integration', () => {
     await expect(libraryPage.addBookModal.coverFetchError).toContainText('No cover found');
   });
 
-  test('shows network error message when Open Library is unreachable @regression', async ({
+  test('shows network error message when Open Library is unreachable', async ({
     libraryPage,
     page,
   }) => {
@@ -143,7 +143,7 @@ test.describe('Find Cover — Open Library Integration', () => {
     await expect(libraryPage.addBookModal.coverFetchError).toContainText('Could not reach Open Library');
   });
 
-  test('shows network error message when Open Library returns a non-OK status @regression', async ({
+  test('shows network error message when Open Library returns a non-OK status', async ({
     libraryPage,
     page,
   }) => {
@@ -164,7 +164,7 @@ test.describe('Find Cover — Open Library Integration', () => {
   // Error dismissal
   // -------------------------------------------------------------------------
 
-  test('cover fetch error clears when cover URL input is edited @regression', async ({
+  test('cover fetch error clears when cover URL input is edited', async ({
     libraryPage,
     page,
   }) => {

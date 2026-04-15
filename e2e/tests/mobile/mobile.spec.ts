@@ -17,15 +17,15 @@ import { TestDataFactory } from '../../utils';
 // Layout — sidebar and navigation
 // ---------------------------------------------------------------------------
 
-test.describe('Mobile Layout — Navigation', () => {
-  test('sidebar is hidden on mobile @smoke', async ({ libraryPage, page }) => {
+test.describe('Mobile Layout — Navigation', { tag: '@regression' }, () => {
+  test('sidebar is hidden on mobile', { tag: '@smoke' }, async ({ libraryPage, page }) => {
     await libraryPage.goto();
 
     // The <aside> has `hidden md:flex` — display:none below md breakpoint.
     await expect(page.getByRole('complementary')).not.toBeVisible();
   });
 
-  test('mobile tab bar is visible on mobile @smoke', async ({ libraryPage, page }) => {
+  test('mobile tab bar is visible on mobile', { tag: '@smoke' }, async ({ libraryPage, page }) => {
     await libraryPage.goto();
 
     // The tab nav is inside the <header> (role="banner"), md:hidden on desktop.
@@ -93,7 +93,7 @@ test.describe('Mobile Layout — Navigation', () => {
 // Core functionality at mobile viewport
 // ---------------------------------------------------------------------------
 
-test.describe('Mobile Layout — Core Functionality', () => {
+test.describe('Mobile Layout — Core Functionality', { tag: '@regression' }, () => {
   let bookIds: string[] = [];
 
   test.afterEach(async ({ apiHelper }) => {
@@ -103,7 +103,7 @@ test.describe('Mobile Layout — Core Functionality', () => {
     bookIds = [];
   });
 
-  test('library page renders book cards at mobile viewport @smoke', async ({
+  test('library page renders book cards at mobile viewport', { tag: '@smoke' }, async ({
     libraryPage,
     apiHelper,
   }) => {
@@ -158,10 +158,10 @@ test.describe('Mobile Layout — Core Functionality', () => {
 // Auth pages at mobile viewport
 // ---------------------------------------------------------------------------
 
-test.describe('Mobile Layout — Auth Pages', () => {
+test.describe('Mobile Layout — Auth Pages', { tag: '@regression' }, () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('login page is usable at mobile viewport @smoke', async ({ loginPage, page }) => {
+  test('login page is usable at mobile viewport', { tag: '@smoke' }, async ({ loginPage, page }) => {
     await loginPage.goto();
 
     await expect(page.getByRole('textbox', { name: 'Email' })).toBeVisible();
