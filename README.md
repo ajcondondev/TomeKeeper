@@ -1,6 +1,6 @@
 # TomeKeeper
 
-> A personal book tracking web app — and a full QA automation portfolio project.
+> A personal book tracking web app
 
 [![Smoke Tests](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml)
 [![Nightly Regression](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml)
