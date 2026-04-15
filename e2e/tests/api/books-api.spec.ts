@@ -18,7 +18,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('GET /api/books', () => {
-    test('returns 200 with empty array for a new user @smoke', async ({ playwright }) => {
+    test('returns 200 with empty array for a new user', { tag: '@smoke' }, async ({ playwright }) => {
       const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const user = TestDataFactory.user();
       await ctx.post(`${apiUrl}/api/auth/register`, { data: user });
@@ -64,7 +64,7 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('POST /api/books', () => {
-    test('returns 201 with created book for valid title and author @smoke', async ({ apiHelper }) => {
+    test('returns 201 with created book for valid title and author', { tag: '@smoke' }, async ({ apiHelper }) => {
       const book = TestDataFactory.book();
 
       const response = await apiHelper.createBookRaw(book);
@@ -261,12 +261,16 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
   test.describe('UI Error Handling', () => {
     test('library page displays error state when API returns 500', async ({ page, libraryPage }) => {
       await page.route('**/api/books', route =>
-        route.fulfill({ status: 500, body: JSON.stringify({ success: false, message: 'Server Error' }) }),
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: false, message: 'Server Error' }),
+        }),
       );
 
       await libraryPage.goto();
 
-      await expect(page.getByText(/Something went wrong/i)).toBeVisible();
+      await expect(page.getByText('Server Error')).toBeVisible();
     });
   });
 });

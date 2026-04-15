@@ -17,7 +17,7 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Add Book - Happy Path', () => {
-    test('adds a book and it appears in the library @smoke', async ({ libraryPage, apiHelper }) => {
+    test('adds a book and it appears in the library', { tag: '@smoke' }, async ({ libraryPage, apiHelper }) => {
       const book = TestDataFactory.book();
 
       await libraryPage.goto();
@@ -107,7 +107,7 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Delete Book', () => {
-    test('deletes a book and removes it from the library @smoke', async ({
+    test('deletes a book and removes it from the library', { tag: '@smoke' }, async ({
       libraryPage,
       apiHelper,
     }) => {
@@ -150,7 +150,7 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Book Status Transitions', () => {
-    test('marks book as read and updates status badge @smoke', async ({
+    test('marks book as read and updates status badge', { tag: '@smoke' }, async ({
       libraryPage,
       apiHelper,
     }) => {

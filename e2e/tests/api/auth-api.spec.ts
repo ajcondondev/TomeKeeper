@@ -11,7 +11,7 @@ test.describe('Auth API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('POST /api/auth/register', () => {
-    test('returns 201 with created user for a new registration @smoke', async ({ apiHelper }) => {
+    test('returns 201 with created user for a new registration', { tag: '@smoke' }, async ({ apiHelper }) => {
       const user = TestDataFactory.user();
 
       const response = await apiHelper.registerRaw(user.email, user.password);
@@ -54,7 +54,7 @@ test.describe('Auth API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('POST /api/auth/login', () => {
-    test('returns 200 and sets a session cookie for valid credentials @smoke', async ({ playwright }) => {
+    test('returns 200 and sets a session cookie for valid credentials', { tag: '@smoke' }, async ({ playwright }) => {
       const apiUrl = process.env.API_URL ?? 'http://localhost:3001';
       const user = TestDataFactory.user();
 

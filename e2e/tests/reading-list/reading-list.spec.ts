@@ -19,7 +19,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
   // Visibility and Filtering
   // -------------------------------------------------------------------------
 
-  test('shows books with want-to-read status @smoke', async ({ readingListPage, apiHelper }) => {
+  test('shows books with want-to-read status', { tag: '@smoke' }, async ({ readingListPage, apiHelper }) => {
     const book = await apiHelper.createBook(TestDataFactory.book());
     await apiHelper.updateBook(book.id, { status: 'want-to-read' });
     bookIds.push(book.id);
@@ -73,7 +73,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
   // Status Transitions
   // -------------------------------------------------------------------------
 
-  test('removes book from reading list when Remove is clicked @smoke', async ({
+  test('removes book from reading list when Remove is clicked', { tag: '@smoke' }, async ({
     readingListPage,
     apiHelper,
   }) => {

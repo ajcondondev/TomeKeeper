@@ -10,7 +10,7 @@ test.describe('Authentication', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Registration - Happy Path', () => {
-    test('registers successfully and redirects to library @smoke', async ({ registerPage, page }) => {
+    test('registers successfully and redirects to library', { tag: '@smoke' }, async ({ registerPage, page }) => {
       const user = TestDataFactory.user();
 
       await registerPage.goto();
@@ -109,7 +109,7 @@ test.describe('Authentication', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Login - Happy Path', () => {
-    test('redirects to library after successful login @smoke', async ({ loginPage, apiHelper, page }) => {
+    test('redirects to library after successful login', { tag: '@smoke' }, async ({ loginPage, apiHelper, page }) => {
       const user = TestDataFactory.user();
       await apiHelper.registerRaw(user.email, user.password);
 

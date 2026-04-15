@@ -27,7 +27,7 @@ test.describe('Reviews CRUD', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Add Review - Happy Path', () => {
-    test('adds a review and it appears on the reviews page @smoke', async ({
+    test('adds a review and it appears on the reviews page', { tag: '@smoke' }, async ({
       reviewsPage,
       apiHelper,
     }) => {
@@ -187,7 +187,7 @@ test.describe('Reviews CRUD', { tag: '@regression' }, () => {
   // -------------------------------------------------------------------------
 
   test.describe('Delete Review', () => {
-    test('deletes a review and removes it from the page @smoke', async ({
+    test('deletes a review and removes it from the page', { tag: '@smoke' }, async ({
       reviewsPage,
       apiHelper,
     }) => {

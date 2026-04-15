@@ -29,7 +29,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('GET /api/reviews', () => {
-    test('returns 200 with empty array for a user with no reviews @smoke', async ({ playwright }) => {
+    test('returns 200 with empty array for a user with no reviews', { tag: '@smoke' }, async ({ playwright }) => {
       const ctx = await playwright.request.newContext({ storageState: { cookies: [], origins: [] } });
       const user = TestDataFactory.user();
       await ctx.post(`${apiUrl}/api/auth/register`, { data: user });
@@ -95,7 +95,7 @@ test.describe('Reviews API Contract', { tag: '@regression' }, () => {
   // ---------------------------------------------------------------------------
 
   test.describe('POST /api/reviews', () => {
-    test('returns 201 with created review for a valid payload @smoke', async ({ apiHelper }) => {
+    test('returns 201 with created review for a valid payload', { tag: '@smoke' }, async ({ apiHelper }) => {
       const review = TestDataFactory.review(bookId!);
 
       const response = await apiHelper.createReviewRaw(review);
