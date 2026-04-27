@@ -4,8 +4,8 @@
 
 **A personal book tracking web app — and a full QA automation portfolio project.**
 
-[![Smoke Tests](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml)
-[![Nightly Regression](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml)
+[![Smoke Tests](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Smoke%20Tests/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml)
+[![Nightly Regression](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Nightly%20Regression/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
