@@ -12,7 +12,8 @@
     "server:build": "tsc -p tsconfig.server.json",
     "server:start": "node dist/server/index.js",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx server/db/seed.ts"
   },
   "dependencies": {
     "axios": "^1.13.6",

@@ -40,3 +40,16 @@ export const reviews = sqliteTable('reviews', {
 
 export type ReviewRow = typeof reviews.$inferSelect
 export type NewReviewRow = typeof reviews.$inferInsert
+
+export const readingSessions = sqliteTable('reading_sessions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  bookId: text('book_id').notNull().references(() => books.id),
+  startedAt: text('started_at').notNull(),
+  endedAt: text('ended_at'),
+  pagesRead: integer('pages_read'),
+  createdAt: text('created_at').notNull(),
+})
+
+export type ReadingSessionRow = typeof readingSessions.$inferSelect
+export type NewReadingSessionRow = typeof readingSessions.$inferInsert

@@ -4,6 +4,7 @@ import session from 'express-session'
 import { booksRouter } from './routes/books.js'
 import { authRouter } from './routes/auth.js'
 import { reviewsRouter } from './routes/reviews.js'
+import { readingRouter } from './routes/reading.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { runMigrations } from './db/client.js'
 
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }))
 app.use('/api/auth', authRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/reviews', reviewsRouter)
+app.use('/api/reading', readingRouter)
 
 app.use(errorHandler)
 
