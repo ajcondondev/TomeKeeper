@@ -62,6 +62,32 @@ export interface ReadingSessionResponse {
   bookAuthor: string | null;
 }
 
+export interface ImportResponse {
+  id: string;
+  userId: string;
+  source: 'csv' | 'open-library' | 'manual';
+  filename: string | null;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'completed_with_errors';
+  totalRows: number;
+  acceptedRows: number;
+  rejectedRows: number;
+  startedAt: string | null;
+  finishedAt: string | null;
+  createdAt: string;
+}
+
+export interface ImportRowResponse {
+  id: string;
+  importId: string;
+  rowNumber: number;
+  rawPayload: string | null;
+  status: 'accepted' | 'rejected' | 'skipped';
+  errorMessage: string | null;
+  bookId: string | null;
+  externalRef: string | null;
+  createdAt: string;
+}
+
 // ---------------------------------------------------------------------------
 // Input types
 // ---------------------------------------------------------------------------
@@ -283,6 +309,41 @@ export class ApiHelper {
 
   async getReadingSessionsRaw(): Promise<APIResponse> {
     return this.request.get(`${this.baseUrl}/api/reading/sessions`);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Imports
+  // ---------------------------------------------------------------------------
+
+  async getImports(status?: string): Promise<ImportResponse[]> {
+    const response = await this.getImportsRaw(status);
+    if (!response.ok()) {
+      throw new Error(`getImports failed: ${response.status()}`);
+    }
+    const body = (await response.json()) as ApiEnvelope<ImportResponse[]>;
+    return body.data;
+  }
+
+  async getImportsRaw(status?: string): Promise<APIResponse> {
+    const query = status ? `?status=${encodeURIComponent(status)}` : '';
+    return this.request.get(`${this.baseUrl}/api/imports${query}`);
+  }
+
+  async getImportRaw(id: string): Promise<APIResponse> {
+    return this.request.get(`${this.baseUrl}/api/imports/${id}`);
+  }
+
+  async getImportRows(id: string): Promise<ImportRowResponse[]> {
+    const response = await this.getImportRowsRaw(id);
+    if (!response.ok()) {
+      throw new Error(`getImportRows failed: ${response.status()}`);
+    }
+    const body = (await response.json()) as ApiEnvelope<ImportRowResponse[]>;
+    return body.data;
+  }
+
+  async getImportRowsRaw(id: string): Promise<APIResponse> {
+    return this.request.get(`${this.baseUrl}/api/imports/${id}/rows`);
   }
 
   async getReviewsRaw(): Promise<APIResponse> {
