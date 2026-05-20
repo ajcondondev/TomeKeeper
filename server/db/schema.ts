@@ -23,6 +23,15 @@ export const books = sqliteTable('books', {
     .default('unread'),
   addedAt: text('added_at').notNull(),
   finishedAt: text('finished_at'),
+  externalRef: text('external_ref'),
+  source: text('source', { enum: ['manual', 'import', 'api'] })
+    .notNull()
+    .default('manual'),
+  updatedAt: text('updated_at'),
+  archivedAt: text('archived_at'),
+  validationStatus: text('validation_status', { enum: ['valid', 'pending', 'failed'] })
+    .notNull()
+    .default('valid'),
 })
 
 export type BookRow = typeof books.$inferSelect
@@ -36,6 +45,10 @@ export const reviews = sqliteTable('reviews', {
   review: text('review').notNull(),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
+  rating: integer('rating'),
+  status: text('status', { enum: ['published', 'flagged', 'removed'] })
+    .notNull()
+    .default('published'),
 })
 
 export type ReviewRow = typeof reviews.$inferSelect
