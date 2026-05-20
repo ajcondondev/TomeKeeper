@@ -25,6 +25,13 @@ export interface BookResponse {
   coverUrl: string | null;
   addedAt: string;
   finishedAt: string | null;
+  // Catalog provenance fields — present on GET responses (select *), absent on
+  // the POST create response, which is built from a literal.
+  externalRef?: string | null;
+  source?: 'manual' | 'import' | 'api';
+  updatedAt?: string | null;
+  archivedAt?: string | null;
+  validationStatus?: 'valid' | 'pending' | 'failed';
 }
 
 export interface ReviewResponse {

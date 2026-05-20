@@ -255,6 +255,26 @@ test.describe('Books API Contract', { tag: '@regression' }, () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Catalog provenance fields
+  // ---------------------------------------------------------------------------
+
+  test.describe('Catalog provenance fields', () => {
+    test('GET returns catalog provenance defaults for a newly created book', async ({ apiHelper }) => {
+      const created = await apiHelper.createBook(TestDataFactory.book());
+      bookIds.push(created.id);
+
+      const response = await apiHelper.getBookRaw(created.id);
+
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(body.data.source).toBe('manual');
+      expect(body.data.validationStatus).toBe('valid');
+      expect(body.data.externalRef).toBeNull();
+      expect(body.data.archivedAt).toBeNull();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // UI Error Handling
   // ---------------------------------------------------------------------------
 
