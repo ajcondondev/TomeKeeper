@@ -45,6 +45,9 @@ yarn-error.log*
 .cache/
 *.tmp
 
+# Local-only materials (never committed)
+_local/
+
 # Claude / AI config and local docs (local only)
 CLAUDE.md
 TESTING_STANDARDS.md
