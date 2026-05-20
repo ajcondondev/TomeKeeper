@@ -106,3 +106,60 @@ export const importRows = sqliteTable('import_rows', {
 
 export type ImportRowRow = typeof importRows.$inferSelect
 export type NewImportRowRow = typeof importRows.$inferInsert
+
+export const supportTickets = sqliteTable('support_tickets', {
+  id: text('id').primaryKey(),
+  ticketNumber: integer('ticket_number').notNull(),
+  userId: text('user_id').notNull().references(() => users.id),
+  bookId: text('book_id').references(() => books.id),
+  reviewId: text('review_id').references(() => reviews.id),
+  importId: text('import_id').references(() => imports.id),
+  importRowId: text('import_row_id').references(() => importRows.id),
+  category: text('category', {
+    enum: [
+      'account',
+      'catalog',
+      'review',
+      'import',
+      'reading_progress',
+      'cover_art',
+      'data_quality',
+      'bug_report',
+    ],
+  })
+    .notNull()
+    .default('bug_report'),
+  priority: text('priority', { enum: ['low', 'medium', 'high', 'urgent'] })
+    .notNull()
+    .default('medium'),
+  status: text('status', { enum: ['open', 'pending', 'resolved', 'closed'] })
+    .notNull()
+    .default('open'),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+  assignedTo: text('assigned_to'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  resolvedAt: text('resolved_at'),
+  closedAt: text('closed_at'),
+})
+
+export type SupportTicketRow = typeof supportTickets.$inferSelect
+export type NewSupportTicketRow = typeof supportTickets.$inferInsert
+
+export const ticketEvents = sqliteTable('ticket_events', {
+  id: text('id').primaryKey(),
+  ticketId: text('ticket_id').notNull().references(() => supportTickets.id),
+  eventType: text('event_type', {
+    enum: ['created', 'comment', 'status_change', 'assignment', 'resolution', 'closed', 'escalation'],
+  })
+    .notNull()
+    .default('comment'),
+  actor: text('actor'),
+  message: text('message'),
+  payload: text('payload'),
+  createdAt: text('created_at').notNull(),
+})
+
+export type TicketEventRow = typeof ticketEvents.$inferSelect
+export type NewTicketEventRow = typeof ticketEvents.$inferInsert
