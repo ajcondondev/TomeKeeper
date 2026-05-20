@@ -66,3 +66,43 @@ export const readingSessions = sqliteTable('reading_sessions', {
 
 export type ReadingSessionRow = typeof readingSessions.$inferSelect
 export type NewReadingSessionRow = typeof readingSessions.$inferInsert
+
+export const imports = sqliteTable('imports', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  source: text('source', { enum: ['csv', 'open-library', 'manual'] })
+    .notNull()
+    .default('csv'),
+  filename: text('filename'),
+  status: text('status', {
+    enum: ['pending', 'processing', 'completed', 'failed', 'completed_with_errors'],
+  })
+    .notNull()
+    .default('pending'),
+  totalRows: integer('total_rows').notNull().default(0),
+  acceptedRows: integer('accepted_rows').notNull().default(0),
+  rejectedRows: integer('rejected_rows').notNull().default(0),
+  startedAt: text('started_at'),
+  finishedAt: text('finished_at'),
+  createdAt: text('created_at').notNull(),
+})
+
+export type ImportRow = typeof imports.$inferSelect
+export type NewImportRow = typeof imports.$inferInsert
+
+export const importRows = sqliteTable('import_rows', {
+  id: text('id').primaryKey(),
+  importId: text('import_id').notNull().references(() => imports.id),
+  rowNumber: integer('row_number').notNull(),
+  rawPayload: text('raw_payload'),
+  status: text('status', { enum: ['accepted', 'rejected', 'skipped'] })
+    .notNull()
+    .default('accepted'),
+  errorMessage: text('error_message'),
+  bookId: text('book_id').references(() => books.id),
+  externalRef: text('external_ref'),
+  createdAt: text('created_at').notNull(),
+})
+
+export type ImportRowRow = typeof importRows.$inferSelect
+export type NewImportRowRow = typeof importRows.$inferInsert
