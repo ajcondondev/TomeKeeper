@@ -88,6 +88,42 @@ export interface ImportRowResponse {
   createdAt: string;
 }
 
+export interface SupportTicketResponse {
+  id: string;
+  ticketNumber: number;
+  userId: string;
+  bookId: string | null;
+  reviewId: string | null;
+  importId: string | null;
+  importRowId: string | null;
+  category: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'open' | 'pending' | 'resolved' | 'closed';
+  subject: string;
+  body: string;
+  assignedTo: string | null;
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt: string | null;
+  closedAt: string | null;
+}
+
+export interface TicketEventResponse {
+  id: string;
+  ticketId: string;
+  eventType: 'created' | 'comment' | 'status_change' | 'assignment' | 'resolution' | 'closed' | 'escalation';
+  actor: string | null;
+  message: string | null;
+  payload: string | null;
+  createdAt: string;
+}
+
+export interface SupportTicketFilters {
+  status?: string;
+  priority?: string;
+  category?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Input types
 // ---------------------------------------------------------------------------
@@ -344,6 +380,45 @@ export class ApiHelper {
 
   async getImportRowsRaw(id: string): Promise<APIResponse> {
     return this.request.get(`${this.baseUrl}/api/imports/${id}/rows`);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Support tickets
+  // ---------------------------------------------------------------------------
+
+  async getSupportTickets(filters: SupportTicketFilters = {}): Promise<SupportTicketResponse[]> {
+    const response = await this.getSupportTicketsRaw(filters);
+    if (!response.ok()) {
+      throw new Error(`getSupportTickets failed: ${response.status()}`);
+    }
+    const body = (await response.json()) as ApiEnvelope<SupportTicketResponse[]>;
+    return body.data;
+  }
+
+  async getSupportTicketsRaw(filters: SupportTicketFilters = {}): Promise<APIResponse> {
+    const params = new URLSearchParams();
+    if (filters.status) params.set('status', filters.status);
+    if (filters.priority) params.set('priority', filters.priority);
+    if (filters.category) params.set('category', filters.category);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request.get(`${this.baseUrl}/api/support/tickets${query}`);
+  }
+
+  async getSupportTicketRaw(id: string): Promise<APIResponse> {
+    return this.request.get(`${this.baseUrl}/api/support/tickets/${id}`);
+  }
+
+  async getTicketEvents(id: string): Promise<TicketEventResponse[]> {
+    const response = await this.getTicketEventsRaw(id);
+    if (!response.ok()) {
+      throw new Error(`getTicketEvents failed: ${response.status()}`);
+    }
+    const body = (await response.json()) as ApiEnvelope<TicketEventResponse[]>;
+    return body.data;
+  }
+
+  async getTicketEventsRaw(id: string): Promise<APIResponse> {
+    return this.request.get(`${this.baseUrl}/api/support/tickets/${id}/events`);
   }
 
   async getReviewsRaw(): Promise<APIResponse> {
