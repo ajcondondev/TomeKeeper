@@ -44,6 +44,17 @@ export interface UserResponse {
   email: string;
 }
 
+export interface ReadingSessionResponse {
+  id: string;
+  bookId: string;
+  startedAt: string;
+  endedAt: string | null;
+  pagesRead: number | null;
+  createdAt: string;
+  bookTitle: string | null;
+  bookAuthor: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Input types
 // ---------------------------------------------------------------------------
@@ -248,6 +259,23 @@ export class ApiHelper {
 
   async getBooksRaw(): Promise<APIResponse> {
     return this.request.get(`${this.baseUrl}/api/books`);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Reading sessions
+  // ---------------------------------------------------------------------------
+
+  async getReadingSessions(): Promise<ReadingSessionResponse[]> {
+    const response = await this.getReadingSessionsRaw();
+    if (!response.ok()) {
+      throw new Error(`getReadingSessions failed: ${response.status()}`);
+    }
+    const body = (await response.json()) as ApiEnvelope<ReadingSessionResponse[]>;
+    return body.data;
+  }
+
+  async getReadingSessionsRaw(): Promise<APIResponse> {
+    return this.request.get(`${this.baseUrl}/api/reading/sessions`);
   }
 
   async getReviewsRaw(): Promise<APIResponse> {
