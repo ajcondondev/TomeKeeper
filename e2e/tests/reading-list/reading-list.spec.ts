@@ -116,6 +116,10 @@ test.describe('Reading List', { tag: '@regression' }, () => {
     await libraryPage.goto();
     await libraryPage.getBookCard(book.title).wantToReadToggleButton.click();
 
+    // Wait for the (non-optimistic) status change to persist before navigating —
+    // goto() reloads from the server, so leaving early would race the in-flight PATCH.
+    await expect(libraryPage.getBookCard(book.title).statusBadge).toHaveText('Want to Read');
+
     await readingListPage.goto();
 
     await expect(readingListPage.getBookCard(book.title).titleHeading).toBeVisible();
@@ -132,6 +136,10 @@ test.describe('Reading List', { tag: '@regression' }, () => {
 
     await readingListPage.goto();
     await readingListPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    // The card leaves the want-to-read view once the PATCH lands; wait for that
+    // before navigating so goto() doesn't reload mid-mutation.
+    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
 
     await libraryPage.goto();
 
@@ -192,6 +200,9 @@ test.describe('Reading List — Empty State', { tag: '@regression' }, () => {
     await libraryPage.goto();
     await libraryPage.addBook(book);
     await libraryPage.getBookCard(book.title).wantToReadToggleButton.click();
+
+    // Confirm the status persisted before leaving — goto() reloads from the server.
+    await expect(libraryPage.getBookCard(book.title).statusBadge).toHaveText('Want to Read');
 
     // Remove it from the reading list — the empty state should reappear.
     await readingListPage.goto();

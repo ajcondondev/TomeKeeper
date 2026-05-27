@@ -288,6 +288,10 @@ test.describe('Reviews — Empty State', { tag: '@regression' }, () => {
     await libraryPage.goto();
     await libraryPage.addBook(book);
 
+    // Wait for the book to persist before navigating — the Reviews page re-fetches
+    // books for its dropdown, and goto() would otherwise race the in-flight POST.
+    await expect(libraryPage.getBookCard(book.title).titleHeading).toBeVisible();
+
     // Add the first review via the empty state CTA.
     await reviewsPage.goto();
     await reviewsPage.emptyStateButton.click();
