@@ -45,6 +45,13 @@ jobs:
       - name: Create e2e environment file
         run: cp e2e/.env.example e2e/.env
 
+      # Data-validation and API-contract specs query the operational SQLite
+      # database directly. The DB is gitignored, and the server only runs
+      # migrations on startup (empty tables) — seeding the demo accounts and QA
+      # fixtures is a separate step. Without it those @regression tests see 0 rows.
+      - name: Seed demo data
+        run: npm run db:seed
+
       - name: Run full regression suite
         run: npx playwright test --project=${{ matrix.browser }}
         working-directory: e2e
