@@ -21,7 +21,7 @@
 
 TomeKeeper is a full-stack web app for tracking your reading. It serves two purposes: a functional book tracker, and a real-world codebase with a comprehensive Playwright E2E test suite built alongside the app.
 
-The testing side covers functional E2E, REST API contract testing, accessibility audits, visual regression, and mobile viewport testing — across Chromium, Firefox, and WebKit — with a smoke gate on every push and a nightly full regression run.
+The testing side covers functional E2E, REST API contract testing, accessibility audits, visual regression, and mobile viewport testing, across Chromium, Firefox, and WebKit, with a smoke gate on every push and a nightly full regression run.
 
 ---
 
