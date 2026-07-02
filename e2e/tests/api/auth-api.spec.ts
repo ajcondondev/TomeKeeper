@@ -105,6 +105,43 @@ test.describe('Auth API Contract', { tag: '@regression' }, () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Rate limiting
+  // ---------------------------------------------------------------------------
+
+  test.describe('Rate limiting', () => {
+    test('returns 429 after repeated failed logins for the same account @security', async ({ apiHelper }) => {
+      const limit = Number(process.env.AUTH_RATE_LIMIT_MAX ?? 20);
+      const email = TestDataFactory.email('bruteforce');
+
+      // Exhaust the failed-attempt budget for this account.
+      for (let i = 0; i < limit; i++) {
+        await apiHelper.loginRaw(email, 'wrong-password-123');
+      }
+
+      const throttled = await apiHelper.loginRaw(email, 'wrong-password-123');
+
+      expect(throttled.status()).toBe(429);
+      const body = await throttled.json();
+      expect(body.success).toBe(false);
+    });
+
+    test('throttling one account does not block other accounts @security', async ({ apiHelper }) => {
+      const limit = Number(process.env.AUTH_RATE_LIMIT_MAX ?? 20);
+      const attacked = TestDataFactory.email('attacked');
+      const bystander = TestDataFactory.user();
+      await apiHelper.registerRaw(bystander.email, bystander.password);
+
+      for (let i = 0; i <= limit; i++) {
+        await apiHelper.loginRaw(attacked, 'wrong-password-123');
+      }
+
+      const bystanderLogin = await apiHelper.loginRaw(bystander.email, bystander.password);
+
+      expect(bystanderLogin.status()).toBe(200);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // POST /api/auth/logout
   // ---------------------------------------------------------------------------
 
