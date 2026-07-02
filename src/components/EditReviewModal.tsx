@@ -27,12 +27,16 @@ export function EditReviewModal({ review, onClose }: EditReviewModalProps) {
 
   const isOpen = review !== null
 
-  useEffect(() => {
+  // Reset the form when a different review is opened (adjust-state-during-render
+  // pattern — avoids the extra re-render of a setState-in-effect).
+  const [prevReview, setPrevReview] = useState<Review | null>(review)
+  if (review !== prevReview) {
+    setPrevReview(review)
     if (review) {
       setForm({ title: review.title, review: review.review })
       setFieldErrors({})
     }
-  }, [review])
+  }
 
   const handleClose = useCallback(() => {
     if (isSubmitting) return
