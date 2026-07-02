@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "typecheck:all": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p e2e && tsc -p mcp",
     "lint": "eslint .",
     "server:dev": "tsx watch server/index.ts",
     "server:build": "tsc -p tsconfig.server.json",
