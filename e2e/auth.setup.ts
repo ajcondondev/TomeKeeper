@@ -18,6 +18,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const authFile = path.join(__dirname, '.auth', 'user.json');
 
+// Cold CI runners pay Vite's first-load compile + dependency optimization on
+// the initial navigation, which can consume most of the default 30s budget.
+setup.setTimeout(120_000);
+
 setup('authenticate', async ({ page }) => {
   const email = process.env.TEST_EMAIL ?? 'e2e-shared@tomekeeper.dev';
   const password = process.env.TEST_PASSWORD ?? 'SecurePass123!';
