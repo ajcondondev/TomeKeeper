@@ -1,6 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import session from 'express-session'
+import Database from 'better-sqlite3'
+import sqliteStoreFactory from 'better-sqlite3-session-store'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { booksRouter } from './routes/books.js'
 import { authRouter } from './routes/auth.js'
 import { reviewsRouter } from './routes/reviews.js'
@@ -30,7 +34,17 @@ app.use(cors({
 
 app.use(express.json({ limit: '100kb' }))
 
+// Sessions persist in SQLite so server restarts don't log users out.
+const SqliteStore = sqliteStoreFactory(session)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const sessionDb = new Database(path.resolve(__dirname, '../data/sessions.db'))
+sessionDb.pragma('journal_mode = WAL')
+
 app.use(session({
+  store: new SqliteStore({
+    client: sessionDb,
+    expired: { clear: true, intervalMs: 15 * 60 * 1000 },
+  }),
   secret: process.env.SESSION_SECRET ?? 'tomekeeper-dev-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
