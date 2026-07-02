@@ -12,13 +12,23 @@ import { runMigrations } from './db/client.js'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
+const isProduction = process.env.NODE_ENV === 'production'
+
+if (isProduction && !process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET must be set in production')
+}
+
+if (isProduction) {
+  // Trust the first proxy (e.g. Fly/Render load balancer) so secure cookies work.
+  app.set('trust proxy', 1)
+}
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN ?? ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }))
 
-app.use(express.json())
+app.use(express.json({ limit: '100kb' }))
 
 app.use(session({
   secret: process.env.SESSION_SECRET ?? 'tomekeeper-dev-secret-change-in-production',
@@ -27,7 +37,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: isProduction,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 }))
