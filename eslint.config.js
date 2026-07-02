@@ -27,7 +27,7 @@ export default tseslint.config(
 
   // Express backend + Playwright e2e (Node environment)
   {
-    files: ['server/**/*.ts', 'e2e/**/*.ts', 'drizzle.config.ts', 'vite.config.ts'],
+    files: ['server/**/*.ts', 'e2e/**/*.ts', 'mcp/**/*.ts', 'drizzle.config.ts', 'vite.config.ts'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     languageOptions: {
       ecmaVersion: 2022,
