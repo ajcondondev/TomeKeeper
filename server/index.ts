@@ -69,6 +69,12 @@ app.use(errorHandler)
 
 runMigrations()
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`TomeKeeper API running on http://localhost:${PORT}`)
 })
+
+// Keep sockets alive longer than any client's idle-reuse window. Node's 5s
+// default races with keep-alive connection reuse under concurrent load,
+// surfacing as intermittent ECONNRESET on the client.
+server.keepAliveTimeout = 65_000
+server.headersTimeout = 66_000
