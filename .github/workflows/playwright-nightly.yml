@@ -71,3 +71,87 @@ jobs:
           name: playwright-test-results-nightly-${{ matrix.browser }}-${{ github.run_id }}
           path: e2e/test-results/
           retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # AI failure triage — runs only when the regression matrix fails.
+  #
+  # Claude reads the failed job logs, classifies each distinct failure
+  # (app bug / test bug / flaky test / infrastructure), and files a triaged
+  # GitHub issue — or comments on an existing open one for the same root cause.
+  #
+  # Requires the ANTHROPIC_API_KEY repository secret; skips gracefully when
+  # the secret is not configured.
+  # ---------------------------------------------------------------------------
+  triage:
+    name: AI Failure Triage
+    runs-on: ubuntu-latest
+    needs: regression
+    if: failure()
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+
+    steps:
+      # Secrets are not readable in job-level `if` expressions, so gate each
+      # step on this check instead.
+      - name: Check for ANTHROPIC_API_KEY
+        id: check
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "ANTHROPIC_API_KEY secret not set — skipping AI triage."
+          fi
+
+      - name: Checkout
+        if: steps.check.outputs.has_key == 'true'
+        uses: actions/checkout@v4
+
+      - name: Triage failures with Claude
+        if: steps.check.outputs.has_key == 'true'
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --allowedTools "Bash(gh:*),Read,Grep,Glob"
+            --max-turns 40
+          prompt: |
+            You are triaging a failed nightly Playwright regression run for this
+            repository (${{ github.repository }}, run id ${{ github.run_id }}).
+            The repository is checked out in the working directory.
+
+            1. Fetch the failure details:
+               gh run view ${{ github.run_id }} --log-failed
+               Identify each failing test spec and its error message.
+
+            2. For each failure, read the relevant spec, page object, and app
+               source in the repo to understand the likely cause.
+
+            3. Classify each distinct root cause as one of:
+               app bug | test bug | flaky test | infrastructure.
+
+            4. Ensure the triage label exists (ignore errors if it already does):
+               gh label create nightly-triage --description "Auto-filed by nightly AI triage" --color D93F0B || true
+
+            5. Check for existing open triage issues:
+               gh issue list --label nightly-triage --state open
+               If an open issue already covers the same root cause, add a comment
+               linking this run instead of creating a duplicate.
+
+            6. Otherwise create ONE issue per distinct root cause:
+               gh issue create --label nightly-triage --title "<concise failure summary>" --body "<body>"
+               The body must contain: classification, affected specs, a short
+               error excerpt, your root-cause analysis, a suggested fix, and a
+               link to the run:
+               https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Be concise and factual. Do not modify any files. Do not speculate
+            beyond the evidence in the logs and source.
