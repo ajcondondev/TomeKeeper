@@ -6,6 +6,7 @@
 
 [![Smoke Tests](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Smoke%20Tests/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml)
 [![Nightly Regression](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Nightly%20Regression/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml)
+[![Code Quality](https://github.com/ajcondondev/TomeKeeper/workflows/Code%20Quality/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/quality.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
@@ -47,7 +48,7 @@ The testing side covers functional E2E, REST API contract testing, accessibility
 | Styling | Tailwind CSS | Utility-first, responsive layout |
 | State | Zustand | Lightweight global state management |
 | Backend | Node.js, Express 5 | REST API server |
-| Session | express-session | Cookie-based auth sessions |
+| Session | express-session | Cookie-based sessions, persisted in SQLite |
 | Database | SQLite (better-sqlite3) | Embedded file-based DB |
 | ORM | Drizzle ORM | Type-safe schema and migrations |
 | Testing | Playwright | E2E, API, visual, a11y, mobile |
@@ -105,7 +106,8 @@ TomeKeeper/
 │   ├── components/         # Component Object Models
 │   ├── fixtures/           # Playwright test fixtures
 │   └── utils/              # ApiHelper · TestDataFactory
-└── .github/workflows/      # CI — smoke gate + nightly regression
+├── mcp/                    # Model Context Protocol server (AI tool access)
+└── .github/workflows/      # CI — smoke gate · nightly regression + AI triage · code quality
 ```
 
 ---
@@ -229,8 +231,52 @@ npx playwright show-report
 |:---------|:--------|:---------|:------|
 | **Smoke gate** | Every push and pull request | Chromium | `@smoke` tests only |
 | **Nightly regression** | 2 AM UTC · manual dispatch | Chromium + Firefox + WebKit | Full suite |
+| **Code quality** | Every push and pull request | — | ESLint + typecheck of all four TS projects (app, server, e2e, mcp) |
 
 HTML reports and traces are uploaded as artifacts on failure.
+
+---
+
+## 🤖 AI Integration
+
+### MCP Server
+
+TomeKeeper ships a [Model Context Protocol](https://modelcontextprotocol.io/) server (`mcp/server.ts`) that exposes the library API as tools any MCP client (Claude Code, Claude Desktop, …) can call — manage your library conversationally: *"add the three Mistborn books to my want-to-read list."*
+
+| Tool | What it does |
+|:-----|:-------------|
+| `search_library` | Filter books by text query and/or reading status |
+| `add_book` | Add a book to the library |
+| `update_reading_status` | Set unread / read / want-to-read |
+| `delete_book` | Remove a book |
+| `add_review` | Write a review for a book |
+| `get_reading_stats` | Totals by status, pages read, genre breakdown |
+
+Run it with the API server up (`npm run server:dev`):
+
+```bash
+npm run mcp
+```
+
+Register in your MCP client (e.g. `.mcp.json` for Claude Code):
+
+```json
+{
+  "mcpServers": {
+    "tomekeeper": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "mcp/server.ts"]
+    }
+  }
+}
+```
+
+It authenticates through the normal session flow, auto-registering its own account (configurable via `TOMEKEEPER_API_URL` / `TOMEKEEPER_EMAIL` / `TOMEKEEPER_PASSWORD`).
+
+### AI Failure Triage
+
+When the nightly regression fails, a follow-up CI job analyzes the failed logs with Claude, classifies each distinct root cause (**app bug · test bug · flaky test · infrastructure**), and files a labeled `nightly-triage` GitHub issue with the affected specs, an error excerpt, and a suggested fix — deduplicating against issues already open. It activates when the `ANTHROPIC_API_KEY` repository secret is set and skips cleanly otherwise.
 
 ---
 
