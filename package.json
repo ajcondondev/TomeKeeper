@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "server:dev": "tsx watch server/index.ts",
     "server:build": "tsc -p tsconfig.server.json",
     "server:start": "node dist/server/index.js",
