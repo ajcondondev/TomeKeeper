@@ -58,5 +58,9 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.59.0",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.2.1"
   }
 }
