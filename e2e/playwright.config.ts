@@ -47,8 +47,9 @@ export default defineConfig({
   /* Retry flaky tests on CI; no retries locally so failures are obvious */
   retries: process.env.CI ? 2 : 0,
 
-  /* CI uses more workers for speed; local uses default (CPU count) */
-  workers: process.env.CI ? 4 : undefined,
+  /* CI runners have 4 vCPUs; locally use 75% of logical cores (Playwright's
+     default is only 50%) — tuned for high-core-count dev machines. */
+  workers: process.env.CI ? 4 : '75%',
 
   reporter: [
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
