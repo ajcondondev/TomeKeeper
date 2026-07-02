@@ -32,6 +32,12 @@ setup('authenticate', async ({ page }) => {
     data: { email, password },
   });
 
+  // On a fresh database the register call above returns 201 and sets a session
+  // cookie in the shared cookie jar, which makes /login redirect straight to
+  // /library before the form can be filled. Clear cookies so the login page
+  // always renders unauthenticated.
+  await page.context().clearCookies();
+
   // Log in through the browser to capture the express-session cookie.
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
