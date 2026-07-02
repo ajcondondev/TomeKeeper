@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import session from 'express-session'
 import Database from 'better-sqlite3'
 import sqliteStoreFactory from 'better-sqlite3-session-store'
@@ -26,6 +27,8 @@ if (isProduction) {
   // Trust the first proxy (e.g. Fly/Render load balancer) so secure cookies work.
   app.set('trust proxy', 1)
 }
+
+app.use(helmet())
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN ?? ['http://localhost:5173', 'http://localhost:5174'],
