@@ -1,0 +1,60 @@
+name: Flake Detection
+
+# Hunts for flaky tests: runs the full functional suite three times with
+# retries DISABLED, so any intermittent failure fails the run loudly instead
+# of being masked by the retry policy used in the nightly regression.
+
+on:
+  schedule:
+    # 4:00 AM UTC every Sunday — after the nightly regression window.
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+
+jobs:
+  flake-hunt:
+    name: Flake Hunt (Chromium ×3, no retries)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers (Chromium only)
+        run: npx playwright install --with-deps chromium
+
+      - name: Create e2e environment file
+        run: cp e2e/.env.example e2e/.env
+
+      # Data-validation and API-contract specs read seeded rows directly.
+      - name: Seed demo data
+        run: npm run db:seed
+
+      - name: Run suite three times with retries disabled
+        run: npx playwright test --project=chromium --repeat-each=3 --retries=0
+        working-directory: e2e
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-flake-${{ github.run_id }}
+          path: e2e/playwright-report/
+          retention-days: 30
+
+      - name: Upload traces and screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-test-results-flake-${{ github.run_id }}
+          path: e2e/test-results/
+          retention-days: 30
