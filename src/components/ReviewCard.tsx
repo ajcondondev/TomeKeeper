@@ -24,11 +24,11 @@ export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
           <p className="mt-0.5 truncate text-xs text-indigo-600 font-medium">
             {review.bookTitle ?? 'Unknown book'}
             {review.bookAuthor ? (
-              <span className="text-gray-400 font-normal"> · {review.bookAuthor}</span>
+              <span className="text-gray-500 font-normal"> · {review.bookAuthor}</span>
             ) : null}
           </p>
         </div>
-        <p className="shrink-0 text-xs text-gray-400">{date}</p>
+        <p className="shrink-0 text-xs text-gray-500">{date}</p>
       </div>
 
       <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{review.review}</p>
@@ -47,7 +47,7 @@ export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="text-xs text-red-500 hover:bg-red-50 hover:text-red-700"
+          className="text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
           onClick={() => onDelete(review.id)}
           title="Delete review"
         >

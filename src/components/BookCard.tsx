@@ -55,7 +55,7 @@ export function BookCard({
         </div>
 
         {book.pageCount !== null && (
-          <p className="text-xs text-gray-400">{book.pageCount} pages</p>
+          <p className="text-xs text-gray-500">{book.pageCount} pages</p>
         )}
       </div>
 
@@ -90,7 +90,7 @@ export function BookCard({
         <Button
           variant="ghost"
           size="sm"
-          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+          className="text-red-600 hover:bg-red-50 hover:text-red-700"
           onClick={() => onRemove(book.id)}
           title="Delete book"
         >

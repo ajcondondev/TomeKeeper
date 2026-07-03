@@ -46,7 +46,7 @@ export function Sidebar() {
 
       {user && (
         <div className="border-t border-gray-100 p-4">
-          <p className="mb-2 truncate text-xs text-gray-400" title={user.email}>
+          <p className="mb-2 truncate text-xs text-gray-500" title={user.email}>
             {user.email}
           </p>
           <button
