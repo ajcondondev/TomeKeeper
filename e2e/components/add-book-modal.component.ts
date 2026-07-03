@@ -21,7 +21,7 @@ export class AddBookModalComponent extends BaseComponent {
   readonly titleInput: Locator;
   readonly authorInput: Locator;
   readonly genreInput: Locator;
-  readonly pagesInput: Locator;
+  readonly numPagesInput: Locator;
   readonly coverUrlInput: Locator;
   readonly findCoverButton: Locator;
   readonly closeButton: Locator;
@@ -34,7 +34,7 @@ export class AddBookModalComponent extends BaseComponent {
     this.titleInput = this.root.getByRole('textbox', { name: 'Title *' });
     this.authorInput = this.root.getByRole('textbox', { name: 'Author *' });
     this.genreInput = this.root.getByRole('textbox', { name: 'Genre' });
-    this.pagesInput = this.root.getByRole('spinbutton', { name: 'Pages' });
+    this.numPagesInput = this.root.getByRole('spinbutton', { name: 'Pages' });
     this.coverUrlInput = this.root.getByRole('textbox', { name: 'Cover URL' });
     this.findCoverButton = this.root.getByRole('button', { name: 'Find Cover' });
     this.closeButton = this.root.getByRole('button', { name: 'Close' });
@@ -59,7 +59,7 @@ export class AddBookModalComponent extends BaseComponent {
     await this.titleInput.fill(data.title);
     await this.authorInput.fill(data.author);
     if (data.genre !== undefined) await this.genreInput.fill(data.genre);
-    if (data.pageCount !== undefined) await this.pagesInput.fill(String(data.pageCount));
+    if (data.pageCount !== undefined) await this.numPagesInput.fill(String(data.pageCount));
     if (data.coverUrl !== undefined) await this.coverUrlInput.fill(data.coverUrl);
     await this.submitButton.click();
   }

@@ -185,6 +185,6 @@ test.describe('Find Cover — Open Library Integration', { tag: '@regression' },
 
     await libraryPage.addBookModal.coverUrlInput.fill('https://example.com/cover.jpg');
 
-    await expect(libraryPage.addBookModal.coverFetchError).not.toBeVisible();
+    await expect(libraryPage.addBookModal.coverFetchError).toBeHidden();
   });
 });

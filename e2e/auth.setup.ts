@@ -22,6 +22,7 @@ export const authFile = path.join(__dirname, '.auth', 'user.json');
 // the initial navigation, which can consume most of the default 30s budget.
 setup.setTimeout(120_000);
 
+// eslint-disable-next-line playwright/expect-expect -- waitForURL('**/library') is the success signal; this setup persists state rather than asserting
 setup('authenticate', async ({ page }) => {
   const email = process.env.TEST_EMAIL ?? 'e2e-shared@tomekeeper.dev';
   const password = process.env.TEST_PASSWORD ?? 'SecurePass123!';
@@ -39,8 +40,8 @@ setup('authenticate', async ({ page }) => {
   await page.context().clearCookies();
 
   // Log in through the browser to capture the express-session cookie.
+  // fill() auto-waits for the form, covering Vite's cold-start compile.
   await page.goto('/login');
-  await page.waitForLoadState('networkidle');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Password' }).fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();

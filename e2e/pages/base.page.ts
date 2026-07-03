@@ -24,6 +24,8 @@ export abstract class BasePage {
   }
 
   async waitForPageLoad(): Promise<void> {
-    await this.page.waitForLoadState('networkidle');
+    // 'load' rather than the discouraged 'networkidle' — data rendered after
+    // API fetches is covered by locator auto-waiting in the specs.
+    await this.page.waitForLoadState('load');
   }
 }

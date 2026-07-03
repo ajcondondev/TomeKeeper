@@ -165,15 +165,14 @@ test.describe('Authentication', { tag: '@regression' }, () => {
       await loginPage.goto();
       await loginPage.submitCredentials(user.email, 'wrongpassword123');
       await expect(loginPage.errorAlert).toBeVisible();
+      // Snapshot the text — the locator re-resolves after the next navigation.
       const wrongPasswordError = await loginPage.errorAlert.textContent();
 
       // Submit with unregistered email
       await loginPage.goto();
       await loginPage.submitCredentials(TestDataFactory.email('unknown'), user.password);
-      await expect(loginPage.errorAlert).toBeVisible();
-      const unknownEmailError = await loginPage.errorAlert.textContent();
 
-      expect(wrongPasswordError).toBe(unknownEmailError);
+      await expect(loginPage.errorAlert).toHaveText(wrongPasswordError ?? '');
     });
   });
 

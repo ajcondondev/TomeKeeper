@@ -196,7 +196,7 @@ test.describe('Accessibility — Modals', { tag: '@regression' }, () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(page.getByRole('dialog', { name: 'Add a Book' })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Add a Book' })).toBeHidden();
   });
 
   test('focus moves into Add Book modal when it opens @critical', async ({ libraryPage, page }) => {
@@ -219,7 +219,7 @@ test.describe('Accessibility — Modals', { tag: '@regression' }, () => {
     await expect(page.getByRole('dialog', { name: 'Add a Book' })).toBeVisible();
 
     await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog', { name: 'Add a Book' })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Add a Book' })).toBeHidden();
 
     await expect(libraryPage.addBookButton).toBeFocused();
   });
@@ -288,7 +288,7 @@ test.describe('Accessibility — Modals', { tag: '@regression' }, () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(page.getByRole('dialog', { name: 'Add a Review' })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Add a Review' })).toBeHidden();
   });
 
   // ---- Edit Review Modal -------------------------------------------------------
@@ -343,7 +343,7 @@ test.describe('Accessibility — Modals', { tag: '@regression' }, () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(page.getByRole('dialog', { name: 'Edit Review' })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Edit Review' })).toBeHidden();
   });
 });
 

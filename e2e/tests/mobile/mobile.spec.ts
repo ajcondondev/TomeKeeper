@@ -22,7 +22,7 @@ test.describe('Mobile Layout — Navigation', { tag: '@regression' }, () => {
     await libraryPage.goto();
 
     // The <aside> has `hidden md:flex` — display:none below md breakpoint.
-    await expect(page.getByRole('complementary')).not.toBeVisible();
+    await expect(page.getByRole('complementary')).toBeHidden();
   });
 
   test('mobile tab bar is visible on mobile', { tag: '@smoke' }, async ({ libraryPage, page }) => {
@@ -136,8 +136,7 @@ test.describe('Mobile Layout — Core Functionality', { tag: '@regression' }, ()
     await expect(libraryPage.getBookCard(book.title).titleHeading).toBeVisible();
 
     const books = await apiHelper.getBooks();
-    const created = books.find(b => b.title === book.title);
-    if (created) bookIds.push(created.id);
+    bookIds.push(...books.filter(b => b.title === book.title).map(b => b.id));
   });
 
   test('reading list page renders at mobile viewport', async ({

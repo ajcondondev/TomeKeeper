@@ -36,7 +36,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
 
     await readingListPage.goto();
 
-    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeHidden();
   });
 
   test('does not show books with read status', async ({ readingListPage, apiHelper }) => {
@@ -46,7 +46,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
 
     await readingListPage.goto();
 
-    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeHidden();
   });
 
   test('shows correct book count for want-to-read books', async ({
@@ -84,7 +84,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
     await readingListPage.goto();
     await readingListPage.getBookCard(book.title).wantToReadToggleButton.click();
 
-    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeHidden();
   });
 
   test('marking a want-to-read book as read removes it from the reading list', async ({
@@ -98,7 +98,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
     await readingListPage.goto();
     await readingListPage.getBookCard(book.title).readToggleButton.click();
 
-    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeHidden();
   });
 
   // -------------------------------------------------------------------------
@@ -139,7 +139,7 @@ test.describe('Reading List', { tag: '@regression' }, () => {
 
     // The card leaves the want-to-read view once the PATCH lands; wait for that
     // before navigating so goto() doesn't reload mid-mutation.
-    await expect(readingListPage.getBookCard(book.title).titleHeading).not.toBeVisible();
+    await expect(readingListPage.getBookCard(book.title).titleHeading).toBeHidden();
 
     await libraryPage.goto();
 
