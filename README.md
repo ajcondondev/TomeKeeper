@@ -1,8 +1,8 @@
 <div align="center">
 
-# 📚 TomeKeeper
+# TomeKeeper
 
-**A personal book tracking web app — and a full QA automation portfolio project.**
+**A personal book tracking web app and a QA automation portfolio project.**
 
 [![Smoke Tests](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Smoke%20Tests/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright.yml)
 [![Nightly Regression](https://github.com/ajcondondev/TomeKeeper/workflows/Playwright%20Nightly%20Regression/badge.svg)](https://github.com/ajcondondev/TomeKeeper/actions/workflows/playwright-nightly.yml)
@@ -18,7 +18,7 @@
 
 ---
 
-## 🧭 What is TomeKeeper?
+## What is TomeKeeper?
 
 TomeKeeper is a full-stack web app for tracking your reading. It serves two purposes: a functional book tracker, and a real-world codebase with a comprehensive Playwright E2E test suite built alongside the app.
 
@@ -26,11 +26,11 @@ The testing side covers functional E2E, REST API contract testing, accessibility
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Detail |
 |:--------|:-------|
-| **Accounts** | Email/password auth — each user has a private library |
+| **Accounts** | Email/password auth; each user has a private library |
 | **Library** | Add books with title, author, genre, page count, and cover image |
 | **Cover art** | Auto-fetched from Open Library by title and author |
 | **Reading status** | Mark books as Read / Unread / Want to Read |
@@ -40,7 +40,7 @@ The testing side covers functional E2E, REST API contract testing, accessibility
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Detail |
 |:------|:-----------|:-------|
@@ -52,12 +52,12 @@ The testing side covers functional E2E, REST API contract testing, accessibility
 | Database | SQLite (better-sqlite3) | Embedded file-based DB |
 | ORM | Drizzle ORM | Type-safe schema and migrations |
 | Testing | Playwright | E2E, API, visual, a11y, mobile |
-| Test data | @faker-js/faker | Randomised realistic test fixtures |
+| Test data | @faker-js/faker | Randomized realistic test fixtures |
 | A11y | axe-core | WCAG 2.1 AA automated audits |
 
 ---
 
-## 🗺️ Architecture
+## Architecture
 
 ```
 ┌──────────────────────────┐          ┌──────────────────────────┐
@@ -78,7 +78,7 @@ The testing side covers functional E2E, REST API contract testing, accessibility
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 TomeKeeper/
@@ -93,7 +93,7 @@ TomeKeeper/
 │   ├── middleware/         # Auth, error handling
 │   └── db/                 # Drizzle schema and migrations
 ├── e2e/                    # Playwright test suite
-│   ├── tests/              # Specs organised by feature / type
+│   ├── tests/              # Specs organized by feature / type
 │   │   ├── auth/           # Login, registration, session, route protection
 │   │   ├── library/        # Book CRUD, cover art, empty states
 │   │   ├── reading-list/   # Reading list management
@@ -107,12 +107,13 @@ TomeKeeper/
 │   ├── fixtures/           # Playwright test fixtures
 │   └── utils/              # ApiHelper · TestDataFactory
 ├── mcp/                    # Model Context Protocol server (AI tool access)
-└── .github/workflows/      # CI — smoke gate · nightly regression + AI triage · code quality
+└── .github/workflows/      # CI: smoke gate, nightly regression + AI triage,
+                            #     weekly flake detection, code quality
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -129,9 +130,9 @@ npm install
 
 ---
 
-## ▶️ Running the App
+## Running the App
 
-### Option A — Mock mode (no backend needed)
+### Option A: Mock mode (no backend needed)
 
 Set `.env.development`:
 
@@ -148,7 +149,7 @@ npm run dev
 
 ---
 
-### Option B — Real API mode
+### Option B: Real API mode
 
 Set `.env.development`:
 
@@ -160,10 +161,10 @@ VITE_API_BASE_URL=http://localhost:3001
 Start both servers in two terminals:
 
 ```bash
-# Terminal 1 — Express API
+# Terminal 1: Express API
 npm run server:dev
 
-# Terminal 2 — Vite frontend
+# Terminal 2: Vite frontend
 npm run dev
 ```
 
@@ -174,9 +175,9 @@ The backend creates `data/tomekeeper.db` on first run and applies all migrations
 
 ---
 
-## 🧪 E2E Tests
+## E2E Tests
 
-The test suite lives in `e2e/` and requires the app running in **real API mode** (both servers). Copy `e2e/.env.example` to `e2e/.env` — the defaults match the dev server ports.
+The test suite lives in `e2e/` and requires the app running in **real API mode** (both servers). Copy `e2e/.env.example` to `e2e/.env`; the defaults match the dev server ports.
 
 ### Test types
 
@@ -190,12 +191,12 @@ The test suite lives in `e2e/` and requires the app running in **real API mode**
 
 ### Tag system
 
-```
-@smoke       ──  Critical path · fast CI gate · ~26 tests
-@regression  ──  Full functional suite · all important scenarios
-@security    ──  Auth and session security properties
-@edge        ──  Edge cases and unusual paths
-```
+| Tag | Scope |
+|:----|:------|
+| `@smoke` | Critical path, fast CI gate |
+| `@regression` | Full functional suite, all important scenarios |
+| `@security` | Auth and session security properties |
+| `@edge` | Edge cases and unusual paths |
 
 ### Common commands
 
@@ -203,7 +204,7 @@ The test suite lives in `e2e/` and requires the app running in **real API mode**
 # Run all tests (from e2e/)
 npx playwright test
 
-# Smoke tests only — fast local check
+# Smoke tests only (fast local check)
 npx playwright test --grep @smoke
 
 # Full regression suite
@@ -230,18 +231,19 @@ npx playwright show-report
 | Workflow | Trigger | Browsers | Scope |
 |:---------|:--------|:---------|:------|
 | **Smoke gate** | Every push and pull request | Chromium | `@smoke` tests only |
-| **Nightly regression** | 2 AM UTC · manual dispatch | Chromium + Firefox + WebKit | Full suite |
-| **Code quality** | Every push and pull request | — | ESLint + typecheck of all four TS projects (app, server, e2e, mcp) |
+| **Nightly regression** | 2 AM UTC, or manual dispatch | Chromium + Firefox + WebKit | Full suite |
+| **Flake detection** | Weekly (Sunday 4 AM UTC), or manual dispatch | Chromium | Full functional suite run 3x with retries disabled |
+| **Code quality** | Every push and pull request | n/a | ESLint + typecheck of all four TS projects (app, server, e2e, mcp) |
 
 HTML reports and traces are uploaded as artifacts on failure.
 
 ---
 
-## 🤖 AI Integration
+## AI Integration
 
 ### MCP Server
 
-TomeKeeper ships a [Model Context Protocol](https://modelcontextprotocol.io/) server (`mcp/server.ts`) that exposes the library API as tools any MCP client (Claude Code, Claude Desktop, …) can call — manage your library conversationally: *"add the three Mistborn books to my want-to-read list."*
+TomeKeeper ships a [Model Context Protocol](https://modelcontextprotocol.io/) server (`mcp/server.ts`) that exposes the library API as tools any MCP client (Claude Code, Claude Desktop, etc.) can call, so you can manage your library conversationally: *"add the three Mistborn books to my want-to-read list."*
 
 | Tool | What it does |
 |:-----|:-------------|
@@ -276,7 +278,7 @@ It authenticates through the normal session flow, auto-registering its own accou
 
 ### AI Failure Triage
 
-When the nightly regression fails, a follow-up CI job analyzes the failed logs with Claude, classifies each distinct root cause (**app bug · test bug · flaky test · infrastructure**), and files a labeled `nightly-triage` GitHub issue with the affected specs, an error excerpt, and a suggested fix — deduplicating against issues already open. It activates when the `ANTHROPIC_API_KEY` repository secret is set and skips cleanly otherwise.
+When the nightly regression fails, a follow-up CI job analyzes the failed logs with Claude, classifies each distinct root cause (app bug, test bug, flaky test, or infrastructure), and files a labeled `nightly-triage` GitHub issue with the affected specs, an error excerpt, and a suggested fix, deduplicating against issues already open. It activates when the `ANTHROPIC_API_KEY` repository secret is set and skips cleanly otherwise.
 
 ---
 
