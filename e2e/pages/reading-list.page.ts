@@ -36,7 +36,7 @@ export class ReadingListPage extends BasePage {
   getBookCard(title: string): BookCardComponent {
     const root = this.page
       .getByTestId('book-card')
-      .filter({ has: this.page.getByRole('heading', { name: title, level: 3 }) });
+      .filter({ has: this.page.getByRole('heading', { name: title, level: 3, exact: true }) });
     return new BookCardComponent(this.page, root);
   }
 }

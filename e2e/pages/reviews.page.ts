@@ -51,7 +51,7 @@ export class ReviewsPage extends BasePage {
   getReviewCard(title: string): ReviewCardComponent {
     const root = this.page
       .getByTestId('review-card')
-      .filter({ has: this.page.getByRole('heading', { name: title, level: 3 }) });
+      .filter({ has: this.page.getByRole('heading', { name: title, level: 3, exact: true }) });
     return new ReviewCardComponent(this.page, root);
   }
 

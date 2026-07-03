@@ -39,11 +39,13 @@ export class LibraryPage extends BasePage {
   /**
    * Scope a BookCardComponent to the card with the given book title.
    * Uses `data-testid="book-card"` combined with a heading filter for precision.
+   * The heading match is exact — substring matching lets "Read Book" also match
+   * "Unread Book" / "Want to Read Book" cards created by parallel tests.
    */
   getBookCard(title: string): BookCardComponent {
     const root = this.page
       .getByTestId('book-card')
-      .filter({ has: this.page.getByRole('heading', { name: title, level: 3 }) });
+      .filter({ has: this.page.getByRole('heading', { name: title, level: 3, exact: true }) });
     return new BookCardComponent(this.page, root);
   }
 
