@@ -159,7 +159,7 @@ export function AddBookModal() {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -175,7 +175,7 @@ export function AddBookModal() {
                 htmlFor="book-title"
                 className="mb-1 block text-sm font-medium text-gray-700"
               >
-                Title <span className="text-red-500">*</span>
+                Title <span className="text-red-600">*</span>
               </label>
               <input
                 id="book-title"
@@ -188,7 +188,7 @@ export function AddBookModal() {
                 autoComplete="off"
               />
               {fieldErrors.title && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.title}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>
               )}
             </div>
 
@@ -198,7 +198,7 @@ export function AddBookModal() {
                 htmlFor="book-author"
                 className="mb-1 block text-sm font-medium text-gray-700"
               >
-                Author <span className="text-red-500">*</span>
+                Author <span className="text-red-600">*</span>
               </label>
               <input
                 id="book-author"
@@ -210,7 +210,7 @@ export function AddBookModal() {
                 autoComplete="off"
               />
               {fieldErrors.author && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.author}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.author}</p>
               )}
             </div>
 
@@ -279,7 +279,7 @@ export function AddBookModal() {
                 </Button>
               </div>
               {coverFetchError && (
-                <p className="mt-1 text-xs text-red-500">{coverFetchError}</p>
+                <p className="mt-1 text-xs text-red-600">{coverFetchError}</p>
               )}
             </div>
           </div>

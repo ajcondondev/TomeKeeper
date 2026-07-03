@@ -115,7 +115,7 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -127,7 +127,7 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
             {/* Book */}
             <div>
               <label htmlFor="review-book" className="mb-1 block text-sm font-medium text-gray-700">
-                Book <span className="text-red-500">*</span>
+                Book <span className="text-red-600">*</span>
               </label>
               <select
                 id="review-book"
@@ -143,14 +143,14 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
                 ))}
               </select>
               {fieldErrors.bookId && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.bookId}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.bookId}</p>
               )}
             </div>
 
             {/* Review title */}
             <div>
               <label htmlFor="review-title" className="mb-1 block text-sm font-medium text-gray-700">
-                Review Title <span className="text-red-500">*</span>
+                Review Title <span className="text-red-600">*</span>
               </label>
               <input
                 id="review-title"
@@ -163,14 +163,14 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
                 autoComplete="off"
               />
               {fieldErrors.title && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.title}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>
               )}
             </div>
 
             {/* Review text */}
             <div>
               <label htmlFor="review-text" className="mb-1 block text-sm font-medium text-gray-700">
-                Review <span className="text-red-500">*</span>
+                Review <span className="text-red-600">*</span>
               </label>
               <textarea
                 id="review-text"
@@ -181,7 +181,7 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
                 placeholder="Write your review or summary here…"
               />
               {fieldErrors.review && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.review}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.review}</p>
               )}
             </div>
           </div>

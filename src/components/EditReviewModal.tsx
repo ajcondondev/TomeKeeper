@@ -119,7 +119,7 @@ export function EditReviewModal({ review, onClose }: EditReviewModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -140,7 +140,7 @@ export function EditReviewModal({ review, onClose }: EditReviewModalProps) {
             {/* Review title */}
             <div>
               <label htmlFor="edit-review-title-input" className="mb-1 block text-sm font-medium text-gray-700">
-                Review Title <span className="text-red-500">*</span>
+                Review Title <span className="text-red-600">*</span>
               </label>
               <input
                 id="edit-review-title-input"
@@ -152,14 +152,14 @@ export function EditReviewModal({ review, onClose }: EditReviewModalProps) {
                 autoComplete="off"
               />
               {fieldErrors.title && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.title}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>
               )}
             </div>
 
             {/* Review text */}
             <div>
               <label htmlFor="edit-review-text" className="mb-1 block text-sm font-medium text-gray-700">
-                Review <span className="text-red-500">*</span>
+                Review <span className="text-red-600">*</span>
               </label>
               <textarea
                 id="edit-review-text"
@@ -169,7 +169,7 @@ export function EditReviewModal({ review, onClose }: EditReviewModalProps) {
                 className={cn(inputClass('review'), 'resize-none')}
               />
               {fieldErrors.review && (
-                <p className="mt-1 text-xs text-red-500">{fieldErrors.review}</p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.review}</p>
               )}
             </div>
           </div>
