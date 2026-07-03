@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/base.fixture';
-import { TestDataFactory } from '../../utils';
+import { ApiHelper, TestDataFactory } from '../../utils';
 
 test.describe('Library CRUD', { tag: '@regression' }, () => {
   // Tracks book IDs created during each test so afterEach can clean up.
@@ -30,30 +30,7 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
       await expect(card.statusBadge).toHaveText('Unread');
 
       const books = await apiHelper.getBooks();
-      const created = books.find(b => b.title === book.title);
-      if (created) bookIds.push(created.id);
-    });
-
-    test('book count increments after adding a book', async ({ libraryPage, apiHelper }) => {
-      // Pre-create one book so the count paragraph is visible.
-      const seed = await apiHelper.createBook(TestDataFactory.book());
-      bookIds.push(seed.id);
-
-      await libraryPage.goto();
-      const countText = await libraryPage.bookCount.textContent() ?? '0 books';
-      const countBefore = parseInt(countText);
-
-      const newBook = TestDataFactory.book();
-      await libraryPage.addBook(newBook);
-
-      const expectedCount = countBefore + 1;
-      const expectedText = expectedCount === 1 ? '1 book' : `${expectedCount} books`;
-
-      await expect(libraryPage.bookCount).toHaveText(expectedText);
-
-      const books = await apiHelper.getBooks();
-      const created = books.find(b => b.title === newBook.title);
-      if (created) bookIds.push(created.id);
+      bookIds.push(...books.filter(b => b.title === book.title).map(b => b.id));
     });
 
     test('adds a book with optional genre and page count', async ({ libraryPage, apiHelper }) => {
@@ -65,8 +42,7 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
       await expect(libraryPage.getBookCard(book.title).titleHeading).toBeVisible();
 
       const books = await apiHelper.getBooks();
-      const created = books.find(b => b.title === book.title);
-      if (created) bookIds.push(created.id);
+      bookIds.push(...books.filter(b => b.title === book.title).map(b => b.id));
     });
   });
 
@@ -119,30 +95,12 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
 
       await card.deleteButton.click();
 
-      await expect(card.titleHeading).not.toBeVisible();
+      await expect(card.titleHeading).toBeHidden();
 
       // Remove from cleanup list — already deleted via UI.
       bookIds = bookIds.filter(id => id !== book.id);
     });
 
-    test('book count decrements after deleting a book', async ({ libraryPage, apiHelper }) => {
-      const bookA = await apiHelper.createBook(TestDataFactory.book());
-      const bookB = await apiHelper.createBook(TestDataFactory.book());
-      bookIds.push(bookA.id, bookB.id);
-
-      await libraryPage.goto();
-      const countText = await libraryPage.bookCount.textContent() ?? '0 books';
-      const countBefore = parseInt(countText);
-
-      await libraryPage.getBookCard(bookA.title).deleteButton.click();
-
-      const expectedCount = countBefore - 1;
-      const expectedText = expectedCount === 1 ? '1 book' : `${expectedCount} books`;
-
-      await expect(libraryPage.bookCount).toHaveText(expectedText);
-
-      bookIds = bookIds.filter(id => id !== bookA.id);
-    });
   });
 
   // -------------------------------------------------------------------------
@@ -248,6 +206,43 @@ test.describe('Library CRUD', { tag: '@regression' }, () => {
 });
 
 // ---------------------------------------------------------------------------
+// Book counts — exact-count assertions need an isolated user; the shared
+// account's book count changes underneath parallel workers and browsers.
+// ---------------------------------------------------------------------------
+
+test.describe('Library CRUD — Counts', { tag: '@regression' }, () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  let api: ApiHelper;
+
+  test.beforeEach(async ({ page }) => {
+    api = new ApiHelper(page.request);
+    const user = TestDataFactory.user();
+    const response = await api.registerRaw(user.email, user.password);
+    if (!response.ok()) throw new Error(`register failed: ${response.status()}`);
+  });
+
+  test('book count increments after adding a book', async ({ libraryPage }) => {
+    await api.createBook(TestDataFactory.book());
+
+    await libraryPage.goto();
+    await libraryPage.addBook(TestDataFactory.book());
+
+    await expect(libraryPage.bookCount).toHaveText('2 books');
+  });
+
+  test('book count decrements after deleting a book', async ({ libraryPage }) => {
+    const bookA = await api.createBook(TestDataFactory.book());
+    await api.createBook(TestDataFactory.book());
+
+    await libraryPage.goto();
+    await libraryPage.getBookCard(bookA.title).deleteButton.click();
+
+    await expect(libraryPage.bookCount).toHaveText('1 book');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Cover Image Handling
 // ---------------------------------------------------------------------------
 
@@ -340,7 +335,7 @@ test.describe('Library Empty State', { tag: '@regression' }, () => {
     await libraryPage.emptyStateButton.click();
     await libraryPage.addBookModal.fillAndSubmit(book);
 
-    await expect(libraryPage.emptyStateMessage).not.toBeVisible();
+    await expect(libraryPage.emptyStateMessage).toBeHidden();
     await expect(libraryPage.getBookCard(book.title).titleHeading).toBeVisible();
   });
 
@@ -349,6 +344,6 @@ test.describe('Library Empty State', { tag: '@regression' }, () => {
     await registerPage.register(TestDataFactory.email(), TestDataFactory.password());
 
     await expect(libraryPage.emptyStateMessage).toBeVisible();
-    await expect(libraryPage.bookCount).not.toBeVisible();
+    await expect(libraryPage.bookCount).toBeHidden();
   });
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures/base.fixture';
-import { TestDataFactory } from '../../utils';
+import { ApiHelper, TestDataFactory } from '../../utils';
 
 test.describe('Reviews CRUD', { tag: '@regression' }, () => {
   let bookId: string | undefined;
@@ -49,36 +49,9 @@ test.describe('Reviews CRUD', { tag: '@regression' }, () => {
 
       // Store ID for cleanup.
       const reviews = await apiHelper.getReviews();
-      const created = reviews.find(r => r.title === reviewData.title);
-      if (created) reviewIds.push(created.id);
+      reviewIds.push(...reviews.filter(r => r.title === reviewData.title).map(r => r.id));
     });
 
-    test('review count increments after adding a review', async ({
-      reviewsPage,
-      apiHelper,
-    }) => {
-      // Pre-create a review via API so the count paragraph is visible.
-      const book = await apiHelper.getBook(bookId!);
-      const seed = await apiHelper.createReview(TestDataFactory.review(book.id));
-      reviewIds.push(seed.id);
-
-      await reviewsPage.goto();
-      const countText = await reviewsPage.reviewCount.textContent() ?? '0 reviews';
-      const countBefore = parseInt(countText);
-
-      const reviewData = TestDataFactory.review(book.id);
-      const bookOption = TestDataFactory.reviewBookOption(book.title, book.author);
-      await reviewsPage.addReview({ bookOption, title: reviewData.title, review: reviewData.review });
-
-      const expectedCount = countBefore + 1;
-      const expectedText = expectedCount === 1 ? '1 review' : `${expectedCount} reviews`;
-
-      await expect(reviewsPage.reviewCount).toHaveText(expectedText);
-
-      const reviews = await apiHelper.getReviews();
-      const created = reviews.find(r => r.title === reviewData.title);
-      if (created) reviewIds.push(created.id);
-    });
   });
 
   // -------------------------------------------------------------------------
@@ -199,33 +172,52 @@ test.describe('Reviews CRUD', { tag: '@regression' }, () => {
       const card = reviewsPage.getReviewCard(review.title);
       await card.deleteButton.click();
 
-      await expect(card.titleHeading).not.toBeVisible();
+      await expect(card.titleHeading).toBeHidden();
 
       reviewIds = reviewIds.filter(id => id !== review.id);
     });
 
-    test('review count decrements after deleting a review', async ({
-      reviewsPage,
-      apiHelper,
-    }) => {
-      const book = await apiHelper.getBook(bookId!);
-      const reviewA = await apiHelper.createReview(TestDataFactory.review(book.id));
-      const reviewB = await apiHelper.createReview(TestDataFactory.review(book.id));
-      reviewIds.push(reviewA.id, reviewB.id);
+  });
+});
 
-      await reviewsPage.goto();
-      const countText = await reviewsPage.reviewCount.textContent() ?? '0 reviews';
-      const countBefore = parseInt(countText);
+// ---------------------------------------------------------------------------
+// Review counts — exact-count assertions need an isolated user; the shared
+// account's review count changes underneath parallel workers and browsers.
+// ---------------------------------------------------------------------------
 
-      await reviewsPage.getReviewCard(reviewA.title).deleteButton.click();
+test.describe('Reviews CRUD — Counts', { tag: '@regression' }, () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
 
-      const expectedCount = countBefore - 1;
-      const expectedText = expectedCount === 1 ? '1 review' : `${expectedCount} reviews`;
+  let api: ApiHelper;
 
-      await expect(reviewsPage.reviewCount).toHaveText(expectedText);
+  test.beforeEach(async ({ page }) => {
+    api = new ApiHelper(page.request);
+    const user = TestDataFactory.user();
+    const response = await api.registerRaw(user.email, user.password);
+    if (!response.ok()) throw new Error(`register failed: ${response.status()}`);
+  });
 
-      reviewIds = reviewIds.filter(id => id !== reviewA.id);
-    });
+  test('review count increments after adding a review', async ({ reviewsPage }) => {
+    const book = await api.createBook(TestDataFactory.book());
+    await api.createReview(TestDataFactory.review(book.id));
+    const reviewData = TestDataFactory.review(book.id);
+    const bookOption = TestDataFactory.reviewBookOption(book.title, book.author);
+
+    await reviewsPage.goto();
+    await reviewsPage.addReview({ bookOption, title: reviewData.title, review: reviewData.review });
+
+    await expect(reviewsPage.reviewCount).toHaveText('2 reviews');
+  });
+
+  test('review count decrements after deleting a review', async ({ reviewsPage }) => {
+    const book = await api.createBook(TestDataFactory.book());
+    const reviewA = await api.createReview(TestDataFactory.review(book.id));
+    await api.createReview(TestDataFactory.review(book.id));
+
+    await reviewsPage.goto();
+    await reviewsPage.getReviewCard(reviewA.title).deleteButton.click();
+
+    await expect(reviewsPage.reviewCount).toHaveText('1 review');
   });
 });
 
@@ -258,7 +250,7 @@ test.describe('Reviews — Empty State', { tag: '@regression' }, () => {
 
     await reviewsPage.goto();
 
-    await expect(reviewsPage.reviewCount).not.toBeVisible();
+    await expect(reviewsPage.reviewCount).toBeHidden();
   });
 
   test('empty state Add Review button opens the Add Review modal', async ({
@@ -301,7 +293,7 @@ test.describe('Reviews — Empty State', { tag: '@regression' }, () => {
       review: 'This book was excellent.',
     });
 
-    await expect(reviewsPage.emptyStateMessage).not.toBeVisible();
+    await expect(reviewsPage.emptyStateMessage).toBeHidden();
     await expect(reviewsPage.getReviewCard('My First Review').titleHeading).toBeVisible();
   });
 });
