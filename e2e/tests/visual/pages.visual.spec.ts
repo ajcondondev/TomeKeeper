@@ -47,12 +47,14 @@ test.describe('Visual — Auth Pages', { tag: '@regression' }, () => {
 
   test('login page renders correctly', { tag: '@smoke' }, async ({ loginPage }) => {
     await loginPage.goto();
+    await expect(loginPage.emailInput).toBeVisible();
 
     await expect(loginPage.page).toHaveScreenshot('login-page.png');
   });
 
   test('registration page renders correctly', async ({ registerPage }) => {
     await registerPage.goto();
+    await expect(registerPage.emailInput).toBeVisible();
 
     await expect(registerPage.page).toHaveScreenshot('register-page.png');
   });
@@ -89,6 +91,7 @@ test.describe('Visual — Empty States', { tag: '@regression' }, () => {
 
   test('library page renders correctly in empty state', async ({ libraryPage, page }) => {
     await libraryPage.goto();
+    await expect(libraryPage.emptyStateMessage).toBeVisible();
 
     await expect(page).toHaveScreenshot('library-empty.png', { mask: [sidebarEmail(page)] });
   });
@@ -98,12 +101,14 @@ test.describe('Visual — Empty States', { tag: '@regression' }, () => {
     page,
   }) => {
     await readingListPage.goto();
+    await expect(readingListPage.emptyStateMessage).toBeVisible();
 
     await expect(page).toHaveScreenshot('reading-list-empty.png', { mask: [sidebarEmail(page)] });
   });
 
   test('reviews page renders correctly in empty state', async ({ reviewsPage, page }) => {
     await reviewsPage.goto();
+    await expect(reviewsPage.emptyStateMessage).toBeVisible();
 
     await expect(page).toHaveScreenshot('reviews-empty.png', { mask: [sidebarEmail(page)] });
   });
@@ -128,6 +133,7 @@ test.describe('Visual — Populated Pages', { tag: '@regression' }, () => {
     );
 
     await libraryPage.goto();
+    await expect(libraryPage.getBookCard('The Great Novel').titleHeading).toBeVisible();
 
     await expect(page).toHaveScreenshot('library-with-books.png', { mask: [sidebarEmail(page)] });
   });
@@ -139,6 +145,7 @@ test.describe('Visual — Populated Pages', { tag: '@regression' }, () => {
     await api.updateBook(book.id, { status: 'want-to-read' });
 
     await readingListPage.goto();
+    await expect(readingListPage.getBookCard('A Book to Read').titleHeading).toBeVisible();
 
     await expect(page).toHaveScreenshot('reading-list-with-books.png', {
       mask: [sidebarEmail(page)],
@@ -154,6 +161,7 @@ test.describe('Visual — Populated Pages', { tag: '@regression' }, () => {
     );
 
     await reviewsPage.goto();
+    await expect(reviewsPage.getReviewCard('A Great Read').titleHeading).toBeVisible();
 
     await expect(page).toHaveScreenshot('reviews-with-reviews.png', {
       mask: [sidebarEmail(page), reviewDates(page)],
@@ -162,6 +170,7 @@ test.describe('Visual — Populated Pages', { tag: '@regression' }, () => {
 
   test('sidebar renders correctly for an authenticated user', async ({ libraryPage, page }) => {
     await libraryPage.goto();
+    await expect(sidebarEmail(page)).toBeVisible();
 
     await expect(page.getByRole('complementary')).toHaveScreenshot('sidebar-authenticated.png', {
       mask: [sidebarEmail(page)],
