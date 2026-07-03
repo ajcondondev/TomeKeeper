@@ -50,6 +50,8 @@ _local/
 
 # Claude / AI config and local docs (local only)
 CLAUDE.md
+AGENTS.md
+.codex/
 TESTING_STANDARDS.md
 CLAUDE_CODE_PLAYBOOK.md
 SETUP_GUIDE.md
