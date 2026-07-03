@@ -42,11 +42,12 @@ jobs:
       - name: Create e2e environment file
         run: cp e2e/.env.example e2e/.env
 
-      # accessibility and mobile also run in Chromium, so no extra browser
-      # install is needed. The visual project is excluded — its baselines are
+      # accessibility also runs in Chromium, so no extra browser install is
+      # needed. mobile (iPhone 14 = WebKit) runs nightly instead to keep this
+      # gate fast. The visual project is excluded — its baselines are
       # win32-only until Linux baselines exist.
       - name: Run smoke tests
-        run: npx playwright test --grep "@smoke" --project=chromium --project=accessibility --project=mobile
+        run: npx playwright test --grep "@smoke" --project=chromium --project=accessibility
         working-directory: e2e
 
       - name: Upload HTML report

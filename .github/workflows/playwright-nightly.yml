@@ -17,8 +17,9 @@ jobs:
       # Run all projects even if one fails — we want the full picture.
       fail-fast: false
       matrix:
-        # accessibility and mobile run in Chromium; the visual project is
-        # local-only until Linux baselines exist (see e2e/tests/visual/).
+        # accessibility runs in Chromium; mobile emulates iPhone 14 (WebKit).
+        # The visual project is local-only until Linux baselines exist
+        # (see e2e/tests/visual/).
         include:
           - project: chromium
             browser: chromium
@@ -29,7 +30,7 @@ jobs:
           - project: accessibility
             browser: chromium
           - project: mobile
-            browser: chromium
+            browser: webkit
 
     steps:
       - name: Checkout
