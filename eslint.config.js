@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import globals from 'globals'
+import playwright from 'eslint-plugin-playwright'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
@@ -38,5 +39,11 @@ export default tseslint.config(
       // underscore-prefixed params are intentionally unused.
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
+  },
+
+  // Playwright test rules — missing awaits, conditional expects, bad practices
+  {
+    files: ['e2e/**/*.ts'],
+    extends: [playwright.configs['flat/recommended']],
   },
 )
