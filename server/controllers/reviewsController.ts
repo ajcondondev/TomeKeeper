@@ -3,6 +3,7 @@ import { eq, and } from 'drizzle-orm'
 import { db } from '../db/client.js'
 import { reviews, books } from '../db/schema.js'
 import { AppError } from '../middleware/errorHandler.js'
+import type { CreateReviewInput, UpdateReviewInput } from '../validation/index.js'
 
 type IdParam = { id: string }
 
@@ -34,26 +35,13 @@ export async function createReview(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const { bookId, title, review } = req.body as Record<string, unknown>
-
-  const validationErrors: string[] = []
-  if (!bookId || typeof bookId !== 'string' || !bookId.trim()) {
-    validationErrors.push('bookId is required')
-  }
-  if (!title || typeof title !== 'string' || !title.trim()) {
-    validationErrors.push('title is required')
-  }
-  if (!review || typeof review !== 'string' || !review.trim()) {
-    validationErrors.push('review is required')
-  }
-  if (validationErrors.length > 0) {
-    return next(new AppError(400, 'Validation failed', validationErrors))
-  }
+  // Validated and trimmed by createReviewSchema
+  const { bookId, title, review } = req.body as CreateReviewInput
 
   const book = db
     .select()
     .from(books)
-    .where(and(eq(books.id, bookId as string), eq(books.userId, req.user!.id)))
+    .where(and(eq(books.id, bookId), eq(books.userId, req.user!.id)))
     .get()
   if (!book) return next(new AppError(404, 'Book not found'))
 
@@ -61,9 +49,9 @@ export async function createReview(
   const newReview = {
     id: crypto.randomUUID(),
     userId: req.user!.id,
-    bookId: bookId as string,
-    title: (title as string).trim(),
-    review: (review as string).trim(),
+    bookId,
+    title,
+    review,
     createdAt: now,
     updatedAt: now,
   }
@@ -95,13 +83,14 @@ export async function updateReview(
     .get()
   if (!existing) return next(new AppError(404, `Review not found: ${id}`))
 
-  const { title, review } = req.body as Record<string, unknown>
+  // Validated and trimmed by updateReviewSchema; absent fields are undefined
+  const { title, review } = req.body as UpdateReviewInput
 
   const updates: { title?: string; review?: string; updatedAt: string } = {
     updatedAt: new Date().toISOString(),
   }
-  if (typeof title === 'string' && title.trim()) updates.title = title.trim()
-  if (typeof review === 'string' && review.trim()) updates.review = review.trim()
+  if (title !== undefined) updates.title = title
+  if (review !== undefined) updates.review = review
 
   db.update(reviews)
     .set(updates)

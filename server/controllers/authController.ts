@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../db/client.js'
 import { users } from '../db/schema.js'
 import { AppError } from '../middleware/errorHandler.js'
+import type { RegisterInput, LoginInput } from '../validation/index.js'
 
 type PublicUser = { id: string; email: string }
 
@@ -16,16 +17,10 @@ export async function register(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const { email, password } = req.body as Record<string, unknown>
+  // Validated and normalised (trimmed, lowercased) by registerSchema
+  const { email, password } = req.body as RegisterInput
 
-  if (!email || typeof email !== 'string' || !email.includes('@')) {
-    return next(new AppError(400, 'A valid email is required'))
-  }
-  if (!password || typeof password !== 'string' || password.length < 8) {
-    return next(new AppError(400, 'Password must be at least 8 characters'))
-  }
-
-  const existing = db.select().from(users).where(eq(users.email, email.toLowerCase())).get()
+  const existing = db.select().from(users).where(eq(users.email, email)).get()
   if (existing) {
     return next(new AppError(409, 'An account with that email already exists'))
   }
@@ -33,7 +28,7 @@ export async function register(
   const passwordHash = await bcrypt.hash(password, 12)
   const newUser = {
     id: crypto.randomUUID(),
-    email: email.toLowerCase(),
+    email,
     passwordHash,
     createdAt: new Date().toISOString(),
   }
@@ -50,16 +45,9 @@ export async function login(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const { email, password } = req.body as Record<string, unknown>
+  const { email, password } = req.body as LoginInput
 
-  if (!email || typeof email !== 'string') {
-    return next(new AppError(400, 'Email is required'))
-  }
-  if (!password || typeof password !== 'string') {
-    return next(new AppError(400, 'Password is required'))
-  }
-
-  const user = db.select().from(users).where(eq(users.email, email.toLowerCase())).get()
+  const user = db.select().from(users).where(eq(users.email, email)).get()
   if (!user) {
     return next(new AppError(401, 'Invalid email or password'))
   }

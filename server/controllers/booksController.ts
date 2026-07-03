@@ -3,6 +3,7 @@ import { eq, and } from 'drizzle-orm'
 import { db } from '../db/client.js'
 import { books } from '../db/schema.js'
 import { AppError } from '../middleware/errorHandler.js'
+import type { CreateBookInput, UpdateBookInput } from '../validation/index.js'
 
 type IdParam = { id: string }
 
@@ -29,32 +30,18 @@ export async function getBook(
   ok(res, row, 'Book retrieved')
 }
 
-export async function createBook(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> {
-  const { title, author, coverUrl, genre, pageCount } = req.body as Record<string, unknown>
-
-  const validationErrors: string[] = []
-  if (!title || typeof title !== 'string' || !title.trim()) {
-    validationErrors.push('title is required')
-  }
-  if (!author || typeof author !== 'string' || !author.trim()) {
-    validationErrors.push('author is required')
-  }
-  if (validationErrors.length > 0) {
-    return next(new AppError(400, 'Validation failed', validationErrors))
-  }
+export async function createBook(req: Request, res: Response): Promise<void> {
+  // Validated and trimmed by createBookSchema
+  const { title, author, coverUrl, genre, pageCount } = req.body as CreateBookInput
 
   const newBook = {
     id: crypto.randomUUID(),
     userId: req.user!.id,
-    title: (title as string).trim(),
-    author: (author as string).trim(),
-    coverUrl: typeof coverUrl === 'string' && coverUrl.trim() ? coverUrl.trim() : null,
-    genre: typeof genre === 'string' && genre.trim() ? genre.trim() : null,
-    pageCount: typeof pageCount === 'number' ? pageCount : null,
+    title,
+    author,
+    coverUrl: coverUrl || null,
+    genre: genre || null,
+    pageCount: pageCount ?? null,
     status: 'unread' as const,
     addedAt: new Date().toISOString(),
     finishedAt: null,
@@ -77,25 +64,18 @@ export async function updateBook(
     .get()
   if (!existing) return next(new AppError(404, `Book not found: ${id}`))
 
+  // Validated and trimmed by updateBookSchema; absent fields are undefined
   const { title, author, coverUrl, genre, pageCount, status, finishedAt } =
-    req.body as Record<string, unknown>
+    req.body as UpdateBookInput
 
   const updates: Partial<typeof existing> = {}
-  if (typeof title === 'string' && title.trim()) updates.title = title.trim()
-  if (typeof author === 'string' && author.trim()) updates.author = author.trim()
-  if (typeof coverUrl === 'string') updates.coverUrl = coverUrl.trim() || null
-  if (typeof genre === 'string') updates.genre = genre.trim() || null
-  if (typeof pageCount === 'number') updates.pageCount = pageCount
-  if (status === 'unread' || status === 'read' || status === 'want-to-read') {
-    updates.status = status
-  }
-  if (typeof finishedAt === 'string' || finishedAt === null) {
-    updates.finishedAt = finishedAt as string | null
-  }
-
-  if (Object.keys(updates).length === 0) {
-    return next(new AppError(400, 'No valid fields provided for update'))
-  }
+  if (title !== undefined) updates.title = title
+  if (author !== undefined) updates.author = author
+  if (coverUrl !== undefined) updates.coverUrl = coverUrl || null
+  if (genre !== undefined) updates.genre = genre || null
+  if (pageCount !== undefined) updates.pageCount = pageCount
+  if (status !== undefined) updates.status = status
+  if (finishedAt !== undefined) updates.finishedAt = finishedAt
 
   db.update(books).set(updates).where(and(eq(books.id, id), eq(books.userId, req.user!.id))).run()
   const updated = db.select().from(books).where(eq(books.id, id)).get()
