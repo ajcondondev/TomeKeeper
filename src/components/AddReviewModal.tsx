@@ -37,12 +37,13 @@ export function AddReviewModal({ isOpen, onClose }: AddReviewModalProps) {
   }, [onClose, isSubmitting])
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      requestAnimationFrame(() => titleRef.current?.focus())
-    }
+    if (!isOpen) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    document.body.style.overflow = 'hidden'
+    requestAnimationFrame(() => titleRef.current?.focus())
     return () => {
       document.body.style.overflow = ''
+      previouslyFocused?.focus()
     }
   }, [isOpen])
 

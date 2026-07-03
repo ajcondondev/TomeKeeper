@@ -43,14 +43,15 @@ export function AddBookModal() {
     setCoverFetchError(null)
   }, [closeModal, isSubmitting])
 
-  // Scroll lock + focus first field on open
+  // Scroll lock + focus first field on open; restore focus to trigger on close
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      requestAnimationFrame(() => titleRef.current?.focus())
-    }
+    if (!isOpen) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    document.body.style.overflow = 'hidden'
+    requestAnimationFrame(() => titleRef.current?.focus())
     return () => {
       document.body.style.overflow = ''
+      previouslyFocused?.focus()
     }
   }, [isOpen])
 
