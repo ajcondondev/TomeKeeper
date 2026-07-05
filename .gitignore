@@ -47,6 +47,7 @@ yarn-error.log*
 
 # Local-only materials (never committed)
 _local/
+.ai-plans/
 
 # Claude / AI config and local docs (local only)
 CLAUDE.md
